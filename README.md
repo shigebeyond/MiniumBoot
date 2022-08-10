@@ -525,22 +525,6 @@ validate_by_id:
     '=': 'Hello world' # 校验符号或函数: 校验的值
 ```
 
-2. validate_by_aid:
-从当前页面中校验 accessibility_id 对应的元素的值
-```yaml
-validate_by_aid:
-  "Timer": # 元素的accessibility_id
-    '>': '2022-07-06 12:00:00' # 校验符号或函数: 校验的值
-```
-
-3. validate_by_class:
-从当前页面中校验类名对应的元素的值
-```yaml
-validate_by_class:
-  "android.widget.TextView": # 元素的类名
-    '=': 'Hello world' # 校验符号或函数: 校验的值
-```
-
 4. validate_by_xpath: 
 从当前页面或html响应中校验 xpath 路径对应的元素的值
 ```yaml

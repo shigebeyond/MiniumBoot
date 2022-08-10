@@ -15,6 +15,8 @@ from MiniumBoot.validator import Validator
 from MiniumBoot.extractor import Extractor
 import minium
 from minium.framework import loader
+from minium.framework.miniconfig import MiniConfig
+from minium.framework.assertbase import AssertBase
 from at.core.adbwrap import AdbWrap
 from minium.native.wx_native.androidnative import WXAndroidNative
 from driver import MiniTestDriver
@@ -39,6 +41,8 @@ class Boot(minium.MiniTest):
         super().__init__()
         # 延迟初始化driver
         self.driver = None
+        self.suite = None
+        self.appjson = None
         # 延迟初始化的app包
         self.package = None
         # 步骤文件所在的目录
@@ -120,14 +124,10 @@ class Boot(minium.MiniTest):
             'validate_by_css': self.validate_by_css,
             'validate_by_xpath': self.validate_by_xpath,
             'validate_by_id': self.validate_by_id,
-            'validate_by_aid': self.validate_by_aid,
-            'validate_by_class': self.validate_by_class,
             'extract_by_jsonpath': self.extract_by_jsonpath,
             'extract_by_css': self.extract_by_css,
             'extract_by_xpath': self.extract_by_xpath,
             'extract_by_id': self.extract_by_id,
-            'extract_by_aid': self.extract_by_aid,
-            'extract_by_class': self.extract_by_class,
             'extract_by_eval': self.extract_by_eval,
         }
         set_var('boot', self)
@@ -204,22 +204,19 @@ class Boot(minium.MiniTest):
         params = steps[0]['init_driver']
         self.init_driver(params)
 
-        # 设置类属性 AssertBase.CONFIG，即用例类的属性  MiniTest.CONFIG
-        minitest.AssertBase.CONFIG = MiniConfig(config)
-        minitest.AssertBase.setUpConfig()
-
         # 修改 MiniTestDriver.test_boot
-        def test_boot():
-            self.run_steps(steps)
+        boot = self
+        def test_boot(driver):
+            boot.run_steps(steps)
         MiniTestDriver.test_boot = test_boot
 
         # 运行测试用例 tests 用例对象, 为 TestSuits: MiniTestDriver.test_boot
         result = minium.MiniResult()
-        tests.run(result)
+        self.suite.run(result)
 
         # 输出结果
         result.print_shot_msg()
-        result.dumps(minitest.AssertBase.CONFIG.outputs) # 用例运行的结果存放目录
+        result.dumps(AssertBase.CONFIG.outputs) # 用例运行的结果存放目录
 
 
     # 执行多个步骤
@@ -292,8 +289,18 @@ class Boot(minium.MiniTest):
             }
         }
         '''
-        # suite
-        self.driver = minium.framework.loader.load_from_case_name('driver', 'test_boot')[0]
+        # app.json
+        path = config['project_path'] + os.sep + 'miniprogram' + os.sep + 'app.json'
+        self.appjson = json.loads(read_file(path))
+
+        # TestSuite
+        self.suite = minium.framework.loader.load_from_case_name('driver', 'test_boot')
+        # driver.MiniTestDriver
+        self.driver = self.suite._tests[0]
+
+        # 设置类属性 AssertBase.CONFIG，即用例类的属性  MiniTest.CONFIG
+        AssertBase.CONFIG = MiniConfig(config)
+        AssertBase.setUpConfig()
 
     # 关闭driver
     def close_driver(self):
@@ -459,7 +466,7 @@ class Boot(minium.MiniTest):
         if type == 'css':
             return self.page.get_element(path)
         if type == 'xpath':
-            return self.page.get_element(xpath = path)
+            return self.page.get_element('', xpath = path)
 
         raise Exception(f"无效查找类型: {type}")
 
@@ -822,7 +829,16 @@ class Boot(minium.MiniTest):
         self.print_current_page()
 
     # 跳转到 tabBar 页面, 并关闭其他所有非 tabBar 页面
-    def switch_tab(self, url):
+    def switch_tab(self, url_or_index):
+        # 如果是索引，则转为url
+        if isinstance(url_or_index, int):
+            i = url_or_index
+            tabs = self.appjson['tabBar']['list']
+            if len(tabs) <= i:
+                raise Exception(f'索引是{i}, 超过 tabBar 页面数')
+            url = '/' + tabs[i]['pagePath']
+        else:
+            url = url_or_index
         self.app.switch_tab(url)
 
     # 返回键
@@ -880,17 +896,18 @@ class Boot(minium.MiniTest):
         self.call_wx_method("sendSms", [{"phoneNumber": phone, "content": content}])
 
     # 打印系统信息
-    def print_system_info(self):
-        log.debug('system_info: ' + self.mini.get_system_info())
+    def print_system_info(self, _):
+        info = self.mini.get_system_info()
+        log.debug('system_info: ' + json.dumps(info))
 
     # 打印所有页面
-    def print_all_pages(self):
+    def print_all_pages(self, _):
         log.debug('all pages: ' + ', '.join(self.app.get_all_pages_path()))
 
     # 打印当前页面
-    def print_current_page(self):
+    def print_current_page(self, _):
         page = self.app.get_current_page()
-        log.debug('current_page: ' + page + ', data: ' + json.dump(page.data))
+        log.debug('current_page: ' + str(page) + ', data: ' + json.dumps(page.data))
 
     # 设置基础url
     def base_url(self, url):

@@ -2,23 +2,26 @@
 - init_driver:
     debug_mode: debug
     enable_app_log: true
-    project_path: /Users/sherlock/github/miniprogram-demo
-    dev_tool_path: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
-    platform: ide
+    # C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat auto --project "C:\Users\41916\code\wechat\jym_wechat" --auto-port 9420
+    project_path: C:\Users\41916\code\wechat\jym_wechat
+    dev_tool_path: C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat # windows
+    #dev_tool_path: /Applications/wechatwebdevtools.app/Contents/MacOS/cli # mac
     app: wx
     close_ide: false
-    test_port: 9421
+    test_port: 9420
     assert_capture: true
     use_push: true
     auto_relaunch: true
-    remote_connect_timeout: 10
-    account_info:
-      wx_nick_name: locker
-      open_id: o6zAJs_pwr**********aROZDjiw
+    request_timeout: 60
+    remote_connect_timeout: 300
+#    account_info:
+#      wx_nick_name: locker
+#      open_id: o6zAJs_pwr**********aROZDjiw
+    platform: ide # Android
     # android
-    device_desire:
-      serial: f978cc97 # Android设备号 adb devices查看
-      uiautomator: UiAutomator2
+#    device_desire:
+#      serial: f978cc97 # Android设备号 adb devices查看
+#      uiautomator: UiAutomator2
     # ios
 #    device_desire:
 #      wda_project_path: /Users/sherlock/.npm-global/lib/node_modules/appium/node_modules/appium-webdriveragent
@@ -28,7 +31,13 @@
 #        model: iPhone 6
 #        version: 12.2.5
 #        name: sherlock's iPhone
-  sleep: 7
+  sleep: 5
   print_system_info:
-  print_all_pages:
-  print_current_page:
+#  print_all_pages:
+#  print_current_page:
+#- switch_tab: /pages/doctor/index
+#  sleep: 2
+- switch_tab: 3
+  sleep: 1
+  click_by_if_exist:
+    xpath: /page/view/view[2]/van-button[1]//button
