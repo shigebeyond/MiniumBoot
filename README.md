@@ -513,10 +513,8 @@ download:
 | 校验器 | 当前页面场景 | http请求场景 |
 | ------------ | ------------ | ------------ |
 | validate_by_id | Y | N |
-| validate_by_aid | Y | N |
-| validate_by_class | Y | N |
+| validate_by_css | Y | Y |
 | validate_by_xpath | Y | Y |
-| validate_by_css | N | Y |
 | validate_by_jsonpath | N | Y |
 
 1. validate_by_id:
@@ -547,9 +545,9 @@ validate_by_class:
 从当前页面或html响应中校验 xpath 路径对应的元素的值
 ```yaml
 validate_by_xpath:
-  "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/androidx.recyclerview.widget.RecyclerView/android.widget.FrameLayout[1]/android.widget.LinearLayout": # 元素的xpath路径
+  "//view[@id='goods_id']": # 元素的xpath路径
     '>': 0 # 校验符号或函数: 校验的值, 即 id 元素的值>0
-  "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/androidx.recyclerview.widget.RecyclerView/android.widget.FrameLayout[2]/android.widget.LinearLayout":
+  "//view[@id='goods_title']":
     contains: 衬衫 # 即 title 元素的值包含'衬衫'
 ```
 
@@ -595,11 +593,9 @@ validate_by_jsonpath:
 | 校验器 | 页面场景 | http请求场景 |
 | ------------ | ------------ | ------------ |
 | extract_by_id | Y | N |
-| extract_by_aid | Y | N |
-| extract_by_class | Y | N |
+| extract_by_css | Y | Y |
 | extract_by_xpath | Y | Y |
 | extract_by_jsonpath | N | Y |
-| extract_by_css | N | Y |
 | extract_by_eval | Y | Y |
 
 1. extract_by_id:
@@ -610,28 +606,12 @@ extract_by_id:
   goods_id: "io.material.catalog:id/cat_demo_text"
 ```
 
-2. extract_by_aid:
-从当前页面中解析 accessibility_id 对应的元素的值
-```yaml
-extract_by_aid:
-  # 变量名: 元素的accessibility_id
-  update_time: "Timer"
-```
-
-3. extract_by_class:
-从当前页面中解析类名对应的元素的值
-```yaml
-extract_by_class:
-  # 变量名: 元素的accessibility_id
-  name: "android.widget.TextView"
-```
-
 4. extract_by_xpath:
 从当前页面或html响应中解析 xpath 路径指定的元素的值
 ```yaml
 extract_by_xpath:
   # 变量名: xpath路径
-  goods_id: /hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/androidx.recyclerview.widget.RecyclerView/android.widget.FrameLayout[1]/android.widget.LinearLayout
+  goods_id: //view[@id='goods_id']
 ```
 
 5. extract_by_css:
@@ -639,7 +619,7 @@ extract_by_xpath:
 ```yaml
 extract_by_css:
   # 变量名: css selector 模式
-  goods_id: table>tbody>tr:nth-child(1)>td:nth-child(1) # 第一行第一列
+  goods_id: #goods_id
 ```
 
 6. extract_by_jsonpath:

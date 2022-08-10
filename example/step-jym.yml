@@ -29,3 +29,6 @@
 #        version: 12.2.5
 #        name: sherlock's iPhone
   sleep: 7
+  print_system_info:
+  print_all_pages:
+  print_current_page:
