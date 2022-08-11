@@ -139,6 +139,8 @@ class Boot(object):
         self.step_file = None
         # 视频/音频文件
         self.video_ele = None
+        # 每个页面的滚动高度
+        self.page_scroll_tops = {}
 
     '''
     执行入口
@@ -590,10 +592,45 @@ class Boot(object):
     # 滚动页面(传y坐标/位置在屏幕中比例)
     # :param y
     def page_scroll(self, y):
-        if isinstance(y, str) and y.endswith('%'):
-            ratio = float(y[:-1]) / 100
-            y = self.page.inner_size["height"] * ratio
-        self.page.scroll_to(y)
+        page = self.page
+        # 字符串或负数
+        if isinstance(y, str) or y < 0:
+            y = str(y) # 处理负数
+            # 加减符
+            op = ''
+            if y.startswith('+') or y.startswith('-'):
+                op = y[0]
+                y = y[1:]
+            # 根据位置在屏幕中比例，计算坐标值
+            if y.endswith('%'):
+                ratio = float(y[:-1]) / 100
+                y = page.inner_size["height"] * ratio
+            else:
+                y = int(y)
+            # 加减值
+            if op != '':
+                # 起始值
+                y0 = self.get_last_scroll_top(page)
+                if op == '+': # 加
+                    y = y0 + y
+                else: # 减
+                    y = y0 - y
+        # 最小也只能为0
+        if y < 0:
+            y = 0
+        page.scroll_to(y)
+        self.page_scroll_tops[page.path] = y
+
+    # 获得上一次的滚动高度
+    def get_last_scroll_top(self, page):
+        if page.path in self.page_scroll_tops:
+            return self.page_scroll_tops[page.path]
+        return 0
+
+    # 删除当前页的滚动高度
+    def del_scroll_top(self, page):
+        if page.path in self.page_scroll_tops:
+            del self.page_scroll_tops[page.path]
 
     # 滚动元素(传元素+坐标)
     # :param config {id, css, path, pos}
@@ -837,6 +874,7 @@ class Boot(object):
     # 跳转到指定页面, 但是不能跳到 tabbar 页面
     def goto(self, url):
         self.app.navigate_to(url)
+        self.del_scroll_top(self.page)
         self.print_current_page()
 
     # 跳转到 tabBar 页面, 并关闭其他所有非 tabBar 页面
@@ -854,6 +892,7 @@ class Boot(object):
 
     # 返回键
     def back(self, _):
+        self.del_scroll_top(self.page)
         self.app.navigate_back()
 
     # 读剪切板
@@ -917,7 +956,8 @@ class Boot(object):
 
     # 打印当前页面
     def print_current_page(self, _):
-        page = self.app.get_current_page()
+        # page = self.app.get_current_page()
+        page = self.page
         log.debug('current_page: ' + str(page) + ', data: ' + json.dumps(page.data))
 
     # 设置基础url

@@ -206,8 +206,12 @@ swipe_horizontal: 0.2,0.7 # x轴起点/终点位置在屏幕的比例，如 0.2,
 
 16. page_scroll: 滚动页面(传y坐标/位置在屏幕中比例)
 ```yaml
+# 滚动到绝对位置
 page_scroll: 200 # y坐标, 单位px
 page_scroll: 20% # 位置在屏幕中比例
+# 滚动到相对位置：相对于上一次位置的相对位移
+page_scroll: +200 # y位移
+page_scroll: -20% # 位移在屏幕中比例
 ```
 
 17. scroll_by: 滚动元素(传元素+坐标)
