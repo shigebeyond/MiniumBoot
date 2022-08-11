@@ -1,0 +1,14 @@
+# 首页tab
+- sleep: 1
+  #swipe_up:
+  page_scroll: 200
+- click_by: # 单个商品
+    xpath: /page/view[3]/view[1]/image
+- sleep: 1
+  swipe_up:
+  click_by: # 推广按钮
+    xpath: /page/view[4]/share//view/van-button//button
+- sleep: 1
+  #click_by: # 取消推广
+  #  xpath: /page/view[4]/share//view/van-share-sheet//van-popup/button
+  back:

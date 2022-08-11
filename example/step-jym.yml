@@ -2,9 +2,9 @@
 - init_driver:
     debug_mode: debug
     enable_app_log: true
-    # C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat auto --project "C:\Users\41916\code\wechat\jym_wechat" --auto-port 9420
-    project_path: C:\Users\41916\code\wechat\jym_wechat
-    dev_tool_path: C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat # windows
+    # F:\微信web开发者工具\cli.bat auto --project "F:\wc_work_project\jym_wechat" --auto-port 9420
+    project_path: F:\wc_work_project\jym_wechat
+    dev_tool_path: F:\微信web开发者工具\cli.bat # windows
     #dev_tool_path: /Applications/wechatwebdevtools.app/Contents/MacOS/cli # mac
     app: wx
     close_ide: false
@@ -31,13 +31,13 @@
 #        model: iPhone 6
 #        version: 12.2.5
 #        name: sherlock's iPhone
-  sleep: 5
   print_system_info:
 #  print_all_pages:
 #  print_current_page:
-#- switch_tab: /pages/doctor/index
-#  sleep: 2
-- switch_tab: 3
-  sleep: 1
-  click_by_if_exist:
-    xpath: /page/view/view[2]/van-button[1]//button
+# 首页tab
+#- include: jym/home.yml
+# 我的推广tab
+#- include: jym/share.yml
+# 我的tab
+- include: jym/my.yml
+  sleep: 4

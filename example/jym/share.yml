@@ -1,0 +1,9 @@
+ # 我的推广tab
+- sleep: 1
+  switch_tab: 2
+- sleep: 1
+  click_by: # 转介绍人
+    xpath: /page/view/view[2]/view[2]/view[1]/navigator
+- sleep: 1
+  back:
+  page_scroll: 400

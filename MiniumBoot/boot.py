@@ -35,7 +35,7 @@ class BreakException(Exception):
         self.condition = condition # 跳转条件
 
 # Minium基于yaml的启动器
-class Boot(minium.MiniTest):
+class Boot(object):
 
     def __init__(self):
         super().__init__()
@@ -194,7 +194,7 @@ class Boot(minium.MiniTest):
         log.debug(f"加载并执行步骤文件: {step_file}")
         # 获得步骤
         steps = read_yaml(step_file)
-        if self.step_file == None: # 首次执行: 初始化driver + 再运行单元测试
+        if self.step_file == None and self.driver == None: # 首次执行: 初始化driver + 再运行单元测试
             self.init_and_run_test(steps)
         else: # 执行多个步骤
             self.step_file = step_file
@@ -314,7 +314,8 @@ class Boot(minium.MiniTest):
     # 关闭driver
     def close_driver(self):
         if self.driver != None:
-            self.driver.mini.shutdown()
+            if self.driver.mini != None:
+                self.driver.mini.shutdown()
             self.driver = None
 
     @property
@@ -460,7 +461,7 @@ class Boot(minium.MiniTest):
                 ele.pick(value)  # 用trigger模拟pick完成的动作
             else:#elif ele._tag_name == 'input':
                 # ele.trigger("input", {"value": value})  # 直接触发事件，但是不会影响UI变化
-                ele.input(value) # UI有变化
+                ele.input(str(value)) # UI有变化
 
     # 隐藏键盘
     def hide_keyboard(self, _):
@@ -499,14 +500,15 @@ class Boot(minium.MiniTest):
     # 真正的横扫
     def do_swipe(self, x1, y1, x2, y2, duration):
         ele = self.get_root_element()
+        # ele = self.find_by('xpath', '/page/view[3]/view[1]/image')
 
         # 两个手指移动到开始
-        touch1 = self.build_touch(x1, y1)
+        touch1 = self.build_touch(x1, y1, ele)
         ele.touch_start(touches=[touch1], changed_touches=[touch1])
 
         # 两个手指移动到结尾
         time.sleep(duration/2)
-        touch2 = self.build_touch(x2, y2)
+        touch2 = self.build_touch(x2, y2, ele)
         ele.touch_move(touches=[touch2], changed_touches=[touch2])
 
         time.sleep(duration/2)
@@ -515,7 +517,7 @@ class Boot(minium.MiniTest):
     # 获得根元素
     def get_root_element(self):
         # xpath: https://www.runoob.com/xpath/xpath-syntax.html
-        # ele = self.page.get_element_by_xpath('/')
+        # ele = self.page.get_element_by_xpath('/') # 报错的
         ele = self.page.get_element_by_xpath('.')
         return ele
 
@@ -554,7 +556,7 @@ class Boot(minium.MiniTest):
     # :param xm x坐标，固定不变，默认为中间
     def swipe_vertical(self, y_range_ratios, xm = None):
         # 获取屏幕的宽高
-        size = self.driver.get_window_size()
+        size = self.page.inner_size
         w = size["width"]
         h = size["height"]
         # x不变：水平居中
@@ -572,7 +574,7 @@ class Boot(minium.MiniTest):
     # :param ym y坐标，固定不变，默认为中间
     def swipe_horizontal(self, x_range_ratios, ym = None):
         # 获取屏幕的宽高
-        size = self.driver.get_window_size()
+        size = self.page.inner_size
         w = size["width"]
         h = size["height"]
         # y不变：水平居中
@@ -647,12 +649,10 @@ class Boot(minium.MiniTest):
         self.do_zoom(ele, False)
 
     # 构建touch对象
-    def build_touch(self, x, y, page_offset = None):
-        ox = 0
-        oy = 0
-        if page_offset != None:
-            ox = page_offset.x
-            oy = page_offset.y
+    def build_touch(self, x, y, ele):
+        page_offset = ele.page_offset
+        ox = page_offset.x
+        oy = page_offset.y
         return {
             "identifier": 0,
             "pageX": x,
@@ -665,7 +665,6 @@ class Boot(minium.MiniTest):
     def do_zoom(self, ele, is_up):
         offset = ele.offset
         size = ele.size
-        page_offset = ele.page_offset
         width = size["width"]
         height = size["height"]
 
@@ -674,14 +673,14 @@ class Boot(minium.MiniTest):
         start1, start2, end1, end2 = self.get_zoom_y_range_ratios(is_up)
 
         # 两个手指移动到开始
-        start_touch1 = self.build_touch(xm, ys + height * start1, page_offset)
-        start_touch2 = self.build_touch(xm, ys + height * start2, page_offset)
+        start_touch1 = self.build_touch(xm, ys + height * start1, ele)
+        start_touch2 = self.build_touch(xm, ys + height * start2, ele)
         ele.touch_start(touches=[start_touch1, start_touch2], changed_touches=[start_touch1, start_touch2])
 
         # 两个手指移动到结尾
         time.sleep(0.1)
-        end_touch1 = self.build_touch(xm, ys + height * end1, page_offset)
-        end_touch2 = self.build_touch(xm, ys + height * end2, page_offset)
+        end_touch1 = self.build_touch(xm, ys + height * end1, ele)
+        end_touch2 = self.build_touch(xm, ys + height * end2, ele)
         ele.touch_move(touches=[end_touch1, end_touch2], changed_touches=[end_touch1, end_touch2])
 
         time.sleep(0.1)
