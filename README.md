@@ -7,7 +7,7 @@ Minium是微信小程序的自动化测试工具，但是要写python代码；
 
 考虑到部分测试伙伴python能力不足，因此扩展Minium，支持通过yaml配置测试步骤;
 
-框架通过编写简单的yaml, 就可以执行一系列复杂的浏览器操作步骤, 如点击/输入/拖拽/上下滑/左右滑/放大缩小/提取变量/打印变量等，极大的简化了伙伴编写自动化测试脚本的工作量与工作难度，大幅提高人效；
+框架通过编写简单的yaml, 就可以执行一系列复杂的微信小程序操作步骤, 如点击/输入/移动/上下滑/左右滑/放大缩小/提取变量/打印变量等，极大的简化了伙伴编写自动化测试脚本的工作量与工作难度，大幅提高人效；
 
 框架通过提供类似python`for`/`if`/`break`语义的步骤动作，赋予伙伴极大的开发能力与灵活性，能适用于广泛的测试场景。
 
@@ -17,13 +17,12 @@ Minium是微信小程序的自动化测试工具，但是要写python代码；
 1. 基于 Minium
 2. 支持通过yaml来配置执行的步骤，简化了自动化测试开发:
 每个步骤可以有多个动作，但单个步骤中动作名不能相同（yaml语法要求）;
-动作代表webdriver上的一种操作，如tap/swipe/scoll等等;
-3. 支持复杂的手势: 拖拽/上下滑/左右滑/放大缩小/多个点组成的移动轨迹等;
+动作代表小程序上的一种操作，如tap/swipe/scoll等等;
+3. 支持复杂的手势: 移动/上下滑/左右滑/放大缩小/多个点组成的移动轨迹等;
 4. 支持提取器
 5. 支持校验器
-6. 支持识别验证码(使用有道ocr)
-7. 支持类似python`for`/`if`/`break`语义的步骤动作，灵活适应各种场景
-8. 支持`include`引用其他的yaml配置文件，以便解耦与复用
+6. 支持类似python`for`/`if`/`break`语义的步骤动作，灵活适应各种场景
+7. 支持`include`引用其他的yaml配置文件，以便解耦与复用
 
 ## todo
 1. 支持更多的动作
@@ -69,11 +68,11 @@ MiniumBoot 步骤配置目录/step-*.yml
 
 每个步骤可以有多个动作，但单个步骤中动作名不能相同（yaml语法要求）;
 
-动作代表webdriver上的一种操作，如tap/swipe/scoll等等;
+动作代表 Minium 上的一种操作，如tap/swipe/scoll等等;
 
 下面详细介绍每个动作:
 
-1. init_driver: 初始化driver
+1. init_driver: 初始化driver, 必须定义在第一个步骤中的第一个动作
 ```yaml
 - init_driver:
     debug_mode: debug
@@ -138,26 +137,26 @@ input_by_id:
   'name': '18877310999'
 ```
 
-10. input_by_css: 填充 css selector 指定的输入框; 
+6. input_by_css: 填充 css selector 指定的输入框; 
 ```yaml
 input_by_css:
   # 输入框css selector模式: 填充的值(支持写变量)
   '#account': '18877310999'
 ```
 
-11. input_by_xpath: 填充 xpath 指定的输入框; 
+7. input_by_xpath: 填充 xpath 指定的输入框; 
 ```yaml
 input_by_xpath:
   # 输入框xpath路径: 填充的值(支持写变量)
   "//input[@id='account']": '18877310999'
 ```
 
-9. hide_keyboard: 隐藏键盘
+8. hide_keyboard: 隐藏键盘
 ```yaml
 hide_keyboard:
 ```
 
-10. swipe: 屏幕横扫(传坐标)
+9. swipe: 屏幕横扫(传坐标)
 ```yaml
 swipe: 
     from: 100,100 # 起点坐标
@@ -165,189 +164,236 @@ swipe:
     duration: 2 # 耗时秒数, 可省
 ```
 
-11. swipe_up: 上滑(传比例)
+10. swipe_up: 上滑(传比例)
 ```yaml
 swipe_up: 0.55 # 移动幅度比例(占屏幕高度的比例)
 swipe_up: # 默认移动幅度比例为0.5
 ```
 
-12. swipe_down: 下滑(传比例)
+11. swipe_down: 下滑(传比例)
 ```yaml
 swipe_down: 0.55 # 移动幅度比例(占屏幕高度的比例)
 swipe_down: # 默认移动幅度比例为0.5
 ```
 
-13. swipe_left: 左滑(传y坐标)
+12. swipe_left: 左滑(传y坐标)
 ```yaml
 swipe_left: 100 # y坐标
 swipe_left: # 默认y坐标为中间
 ```
 
-14. swipe_right: 右滑(传y坐标)
+13. swipe_right: 右滑(传y坐标)
 ```yaml
 swipe_right: 100 # y坐标
 swipe_right: # 默认y坐标为中间
 ```
 
-15. swipe_vertical: 垂直方向(上下)滑动(传比例)
+14. swipe_vertical: 垂直方向(上下)滑动(传比例)
 ```yaml
 swipe_vertical: 0.2,0.7 # y轴起点/终点位置在屏幕的比例，如 0.2,0.7，即y轴上从屏幕0.2比例处滑到0.7比例处
 ```
 
-16. swipe_horizontal: 水平方向(左右)滑动(传比例)
+15. swipe_horizontal: 水平方向(左右)滑动(传比例)
 ```yaml
 swipe_horizontal: 0.2,0.7 # x轴起点/终点位置在屏幕的比例，如 0.2,0.7，即x轴上从屏幕0.2比例处滑到0.7比例处
 ```
 
-1. scroll_page: 滚动页面(传坐标)
+16. page_scroll: 滚动页面(传y坐标)
 ```yaml
-scroll_page:
+page_scroll: 200 # y坐标, 单位px
 ```
 
-1. scroll_by: 滚动元素(传元素+坐标)
+17. scroll_by: 滚动元素(传元素+坐标)
 ```yaml
 scroll_by:
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
+    # 移动的坐标
+    pos: 100,200
 ```
 
-1. swiper_by: 切换 swiper 容器当前的页面
+18. swiper_by: 切换 swiper 容器当前的页面
 ```yaml
 swiper_by:
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
+    # 页面序号, 从0开始
+    index: 2
 ```
 
-17. move_track_by: 某个元素的移动轨迹(pos传坐标序列)
+19. move_track_by: 某个元素的移动轨迹(pos传坐标序列)
 ```yaml
 move_track_by:
-  id: xxx
-  pos: '800,1600;100,1600;100,600;800,600;360,600;360,1100' # 坐标序列，坐标之间使用;分割，如x1,y1;x2,y2
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
+    # 坐标序列，坐标之间使用;分割，如x1,y1;x2,y2
+    pos: '800,1600;100,1600;100,600;800,600;360,600;360,1100'
 ```
 
-17. move_track: 移动轨迹(传坐标序列)
+20. move_track: 移动轨迹(传坐标序列)
 ```yaml
 move_track: '800,1600;100,1600;100,600;800,600;360,600;360,1100' # 坐标序列，坐标之间使用;分割，如x1,y1;x2,y2
 ```
 
-21. zoom_in: 放大
+21. zoom_in: 放大页面
 ```yaml
 zoom_in: 
 ```
 
-22. zoom_out: 缩小
+22. zoom_out: 缩小页面
 ```yaml
 zoom_out: 
 ```
 
-1. long_press_by: 长按
+23. zoom_in_by: 放大某元素
 ```yaml
-long_press_by:
+zoom_in_by:
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
 ```
 
-23. tap: 敲击屏幕(传坐标)
+24. zoom_out_by: 缩小某元素
+```yaml
+zoom_out_by:
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
+```
+
+25. long_press_by: 长按某元素
+```yaml
+long_press_by:
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
+```
+
+26. tap: 敲击屏幕(传坐标)
 ```yaml
 tap: 200,200
 ```
 
-24. tap_by: 敲击元素
+27. tap_by: 敲击元素
 ```yaml
 tap_by:
-    # 元素查找方式(id/sid/class/xpath) : 查找的值
-    #id: io.material.catalog:id/cat_demo_landing_row_root
-    xpath: /hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/androidx.recyclerview.widget.RecyclerView/android.widget.FrameLayout[1]/android.widget.LinearLayout # 按钮的xpath路径
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    xpath: //view[@id='btn']
     # 耗时秒数, 可省, 可用于模拟长按
     duration: 10
 ```
 
-25. click_by/click_by_if_exist: 点击元素; 
+28. click_by/click_by_if_exist: 点击元素; 
 ```yaml
 click_by:
-  # 元素查找方式(id/sid/class/xpath) : 查找的值
-  #id: io.material.catalog:id/cat_demo_landing_row_root
-  xpath: /hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/androidx.recyclerview.widget.RecyclerView/android.widget.FrameLayout[1]/android.widget.LinearLayout # 按钮的xpath路径
+  # 元素查找方式(id/css/xpath多选一) : 查找的值
+  xpath: //view[@id='btn']
 ```
 
 如果点击之前要先判断元素是否存在，则换用 click_by_if_exist
 
-
-1. allow: 处理授权弹窗: 允许
+29. allow: 处理授权弹窗-允许某权限
 ```yaml
-allow:
+allow: login # 授权类型
 ```
 
-1. forbid: 处理授权弹窗: 禁止
+| 授权类型 | 描述 |
+| ------------ | ------------ | 
+| authorize | 处理授权确认弹框 |
+| login | 处理微信登陆确认弹框 |
+| get_user_info | 处理获取用户信息确认弹框 |
+| get_location | 处理获取位置信息确认弹框 |
+| get_we_run_data | 处理获取微信运动数据确认弹框 |
+| record | 处理录音确认弹框 |
+| write_photos_album | 处理保存相册确认弹框 |
+| camera | 处理使用摄像头确认弹框 |
+| get_user_phone | 处理获取用户手机号码确认弹框 |
+| send_subscribe_message | 允许发送订阅消息 |
+| get_we_run_data | 处理获取微信运动数据确认弹框 |
+
+30. forbid: 处理授权弹窗-禁止某权限
 ```yaml
-forbid:
+forbid: login # 授权类型
 ```
 
-1. handle_modal: 点击弹窗的按钮
+授权类型, 参考上一节`allow`动作
+
+31. handle_modal: 点击弹窗的按钮
 ```yaml
-handle_modal:
+handle_modal: # 按钮文本，可省，默认为"确定"
+handle_modal: 确定
+handle_modal: 取消
 ```
 
-1. deactive: 使微信进入后台一段时间, 再切回前台
+32. deactive: 使微信进入后台一段时间, 再切回前台
 ```yaml
 deactive:
 ```
 
-27. set_orientation: 设置屏幕方向
+33. set_orientation: 设置屏幕方向
 ```yaml
 set_orientation: true # 是否竖屏, 否则横屏
 ```
 
-28. set_location: 设置地理位置
+34. set_location: 设置地理位置
 ```yaml
 set_location: 49,123 # 纬度,经度
-set_location: 49,123,10 # 纬度,经度,海拔高度
 ```
 
-29. screenshot: 整个窗口截图存为png; 
+35. screenshot: 整个窗口截图存为png; 
 ```yaml
 screenshot:
     save_dir: downloads # 保存的目录，默认为 downloads
     save_file: test.png # 保存的文件名，默认为:时间戳.png
 ```
 
-1. call_wx_method: 调用微信函数
+36. call_wx_method: 调用微信函数
 ```yaml
-call_wx_method:
+call_wx_method: scanCode
 ```
 
-1. goto: 跳转到指定页面, 但是不能跳到 tabbar 页面
+37. goto: 跳转到指定页面, 但是不能跳到 tabbar 页面
 ```yaml
-goto:
+goto: /pages/home/index # 页面url
 ```
 
-1. switch_tab: 跳转到 tabBar 页面, 并关闭其他所有非 tabBar 页面
+38. switch_tab: 跳转到 tabBar 页面, 并关闭其他所有非 tabBar 页面
 ```yaml
-switch_tab:
+switch_tab: /pages/home/index # 页面url
+switch_tab: 1 # 页面序号, 从0开始
 ```
 
-31. execute_js: 执行js; 
+39. execute_js: 执行js; 
 ```yaml
-execute_js: alert('hello world')
+execute_js: console.log('hello world')
 ```
 
-32. back: 返回键; 
+40. back: 返回键; 
 ```yaml
 back: 
 ```
 
-35. get_clipboard: 读剪切板内容; 
+41. get_clipboard: 读剪切板内容; 
 ```yaml
 get_clipboard: name # 参数为记录剪切板内容的变量名
 ```
 
-36. set_clipboard: 写剪切板内容; 
+42. set_clipboard: 写剪切板内容; 
 ```yaml
 set_clipboard: hello world $name # 参数是写入内容，可带参数
 ```
 
-37. push_file:推文件到手机上, 即写手机上文件; 
+43. push_file:推文件到手机上, 即写手机上文件; 
 ```yaml
 push_file:
     to: /storage/emulated/0/documents/test/a.txt # 写入的手机上的文件
     from: a.txt # 写入内容的本地来源文件
 ```
 
-38. pull_file:从手机中拉文件, 即读手机上的文件; 
+44. pull_file:从手机中拉文件, 即读手机上的文件; 
 ```yaml
 pull_file:
     from: /storage/emulated/0/documents/test/a.txt # 读取的手机上的文件
@@ -355,45 +401,44 @@ pull_file:
 print: $content
 ```
 
-
-1. pull_down_refresh: 下拉刷新
+45. pull_down_refresh: 下拉刷新
 ```yaml
 pull_down_refresh:
 ```
 
-1. vibrate: 震动
+46. vibrate: 震动
 ```yaml
-vibrate:
+vibrate: true # 是否长震,否则短震
 ```
 
-1. scan_code: 扫码
+47. scan_code: 扫码
 ```yaml
 scan_code:
 ```
 
-39. send_sms:发送短信; 
+48. send_sms:发送短信; 
 ```yaml
 send_sms:
     phone: 13475556022
     content: hello $name
 ```
 
-1. print_system_info: 打印系统信息
+49. print_system_info: 打印系统信息
 ```yaml
 print_system_info:
 ```
 
-1. print_all_pages: 打印所有页面
+50. print_all_pages: 打印所有页面
 ```yaml
 print_all_pages:
 ```
 
-1. print_current_page: 打印当前页面
+51. print_current_page: 打印当前页面
 ```yaml
 print_current_page:
 ```
 
-43. for: 循环; 
+52. for: 循环; 
 for动作下包含一系列子步骤，表示循环执行这系列子步骤；变量`for_i`记录是第几次迭代（从1开始）
 ```yaml
 # 循环3次
@@ -411,7 +456,7 @@ for:
     sleep: 2
 ```
 
-44. once: 只执行一次，等价于 `for(1)`; 
+53. once: 只执行一次，等价于 `for(1)`; 
 once 结合 moveon_if，可以模拟 python 的 `if` 语法效果
 ```yaml
 once:
@@ -421,31 +466,31 @@ once:
     sleep: 2
 ```
 
-45. break_if: 满足条件则跳出循环; 
+54. break_if: 满足条件则跳出循环; 
 只能定义在for循环的子步骤中
 ```yaml
 break_if: for_i>2 # 条件表达式，python语法
 ```
 
-46. moveon_if: 满足条件则往下走，否则跳出循环; 
+55. moveon_if: 满足条件则往下走，否则跳出循环; 
 只能定义在for循环的子步骤中
 ```yaml
 moveon_if: for_i<=2 # 条件表达式，python语法
 ```
 
-47. moveon_if_exist_by: 如果检查元素存在 则往下走，否则跳出循环; 
+56. moveon_if_exist_by: 如果检查元素存在 则往下走，否则跳出循环; 
 只能定义在for循环的子步骤中
 ```yaml
 moveon_if_exist_by:
     id: com.shikee.shikeeapp:id/button1
 ```
 
-48. include: 包含其他步骤文件，如记录公共的步骤，或记录配置数据(如用户名密码); 
+57. include: 包含其他步骤文件，如记录公共的步骤，或记录配置数据(如用户名密码); 
 ```yaml
 include: part-common.yml
 ```
 
-49. set_vars: 设置变量; 
+58. set_vars: 设置变量; 
 ```yaml
 set_vars:
   name: shi
@@ -453,17 +498,17 @@ set_vars:
   birthday: 5-27
 ```
 
-50. print_vars: 打印所有变量; 
+59. print_vars: 打印所有变量; 
 ```yaml
 print_vars:
 ```
 
-51. base_url: 设置基础url
+60. base_url: 设置基础url
 ```yaml
 base_url: https://www.taobao.com/
 ```
 
-52. get: 发get请求, 但无跳转; 
+61. get: 发get请求, 但无跳转; 
 ```yaml
 get:
     url: $dyn_data_url # url,支持写变量
@@ -471,7 +516,7 @@ get:
       dyn_data: "json.loads(response.text[16:-1])" # 变量response是响应对象
 ```
 
-53. post: 发post请求, 但无跳转; 
+62. post: 发post请求, 但无跳转; 
 ```yaml
 post:
     url: http://admin.jym1.com/store/add_store # url,支持写变量
@@ -482,7 +527,7 @@ post:
       store_logo_url: '$img'
 ```
 
-54. upload: 上传文件; 
+63. upload: 上传文件; 
 ```yaml
 upload: # 上传文件/图片
     url: http://admin.jym1.com/upload/common_upload_img/store_img
@@ -493,7 +538,7 @@ upload: # 上传文件/图片
       img: $.data.url
 ```
 
-55. download: 下载文件; 
+64. download: 下载文件; 
 变量`download_file`记录最新下载的单个文件
 ```yaml
 download:
@@ -525,17 +570,7 @@ validate_by_id:
     '=': 'Hello world' # 校验符号或函数: 校验的值
 ```
 
-4. validate_by_xpath: 
-从当前页面或html响应中校验 xpath 路径对应的元素的值
-```yaml
-validate_by_xpath:
-  "//view[@id='goods_id']": # 元素的xpath路径
-    '>': 0 # 校验符号或函数: 校验的值, 即 id 元素的值>0
-  "//view[@id='goods_title']":
-    contains: 衬衫 # 即 title 元素的值包含'衬衫'
-```
-
-5. validate_by_css: 
+2. validate_by_css: 
 从html响应中校验类名对应的元素的值
 ```yaml
 validate_by_css:
@@ -545,7 +580,17 @@ validate_by_css:
     contains: 衬衫 # 即 title 元素的值包含'衬衫'
 ```
 
-6. validate_by_jsonpath: 
+3. validate_by_xpath: 
+从当前页面或html响应中校验 xpath 路径对应的元素的值
+```yaml
+validate_by_xpath:
+  "//view[@id='goods_id']": # 元素的xpath路径
+    '>': 0 # 校验符号或函数: 校验的值, 即 id 元素的值>0
+  "//view[@id='goods_title']":
+    contains: 衬衫 # 即 title 元素的值包含'衬衫'
+```
+
+4. validate_by_jsonpath: 
 从json响应中校验 多层属性 的值
 ```yaml
 validate_by_jsonpath:
@@ -590,15 +635,7 @@ extract_by_id:
   goods_id: "io.material.catalog:id/cat_demo_text"
 ```
 
-4. extract_by_xpath:
-从当前页面或html响应中解析 xpath 路径指定的元素的值
-```yaml
-extract_by_xpath:
-  # 变量名: xpath路径
-  goods_id: //view[@id='goods_id']
-```
-
-5. extract_by_css:
+2. extract_by_css:
 从html响应中解析 css selector 模式指定的元素的值
 ```yaml
 extract_by_css:
@@ -606,7 +643,15 @@ extract_by_css:
   goods_id: #goods_id
 ```
 
-6. extract_by_jsonpath:
+3. extract_by_xpath:
+从当前页面或html响应中解析 xpath 路径指定的元素的值
+```yaml
+extract_by_xpath:
+  # 变量名: xpath路径
+  goods_id: //view[@id='goods_id']
+```
+
+4. extract_by_jsonpath:
 从json响应中解析 多层属性 的值
 ```yaml
 extract_by_jsonpath:
@@ -614,7 +659,7 @@ extract_by_jsonpath:
   img: $.data.url
 ```
 
-7. extract_by_eval:
+5. extract_by_eval:
 使用 `eval(表达式)` 执行表达式, 并将执行结果记录到变量中
 ```yaml
 extract_by_eval:
