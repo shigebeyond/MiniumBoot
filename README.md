@@ -28,6 +28,12 @@ Minium是微信小程序的自动化测试工具，但是要写python代码；
 1. 支持更多的动作
 
 ## 安装
+1. 安装 minium
+```
+pip3 install https://minitest.weixin.qq.com/minium/Python/dist/minium-latest.zip
+```
+
+2. 安装 MiniumBoot
 ```
 pip3 install MiniumBoot
 ```
