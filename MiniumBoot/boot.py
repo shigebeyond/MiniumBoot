@@ -587,9 +587,12 @@ class Boot(object):
         duration = 0.1
         self.do_swipe(x1, ym, x2, ym, duration)
 
-    # 滚动页面(传y坐标)
+    # 滚动页面(传y坐标/位置在屏幕中比例)
     # :param y
     def page_scroll(self, y):
+        if isinstance(y, str) and y.endswith('%'):
+            ratio = float(y[:-1]) / 100
+            y = self.page.inner_size["height"] * ratio
         self.page.scroll_to(y)
 
     # 滚动元素(传元素+坐标)
