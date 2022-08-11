@@ -22,12 +22,12 @@ from minium.native.wx_native.androidnative import WXAndroidNative
 from driver import MiniTestDriver
 
 # 扩展BaseElement方法
-def get_text_or_content(self):
-    r = self.text
+def get_value_or_text(self):
+    r = self.value
     if r != '':
         return r
     return self.inner_text
-minium.BaseElement.get_text_or_content = get_text_or_content
+minium.BaseElement.get_value_or_text = get_value_or_text
 
 # 跳出循环的异常
 class BreakException(Exception):
@@ -41,7 +41,13 @@ class Boot(minium.MiniTest):
         super().__init__()
         # 延迟初始化driver
         self.driver = None
+        # 当前页面的校验器, 依赖于driver
+        self.validator = None
+        # 当前页面的提取器, 依赖于driver
+        self.extractor = None
+        # 加载的 TestSuite
         self.suite = None
+        # 项目代码中的app.json数据
         self.appjson = None
         # 延迟初始化的app包
         self.package = None
@@ -51,10 +57,6 @@ class Boot(minium.MiniTest):
         self.downloaded_files = {}
         # 基础url
         self._base_url = None
-        # 当前页面的校验器
-        self.validator = Validator(self.driver)
-        # 当前页面的提取器
-        self.extractor = Extractor(self.driver)
         # 动作映射函数
         self.actions = {
             'init_driver': self.init_driver,
@@ -72,13 +74,15 @@ class Boot(minium.MiniTest):
             'swipe_right': self.swipe_right,
             'swipe_vertical': self.swipe_vertical,
             'swipe_horizontal': self.swipe_horizontal,
-            'scroll_page': self.scroll_page,
+            'page_scroll': self.page_scroll,
             'scroll_by': self.scroll_by,
             'swiper_by': self.swiper_by,
             'move_track_by': self.move_track_by,
             'move_track': self.move_track,
             'zoom_in': self.zoom_in,
             'zoom_out': self.zoom_out,
+            'zoom_in_by': self.zoom_in_by,
+            'zoom_out_by': self.zoom_out_by,
             'tap': self.tap,
             'tap_by': self.tap_by,
             'click_by': self.click_by,
@@ -291,12 +295,17 @@ class Boot(minium.MiniTest):
         '''
         # app.json
         path = config['project_path'] + os.sep + 'miniprogram' + os.sep + 'app.json'
-        self.appjson = json.loads(read_file(path))
+        self.appjson = read_json(path)
 
         # TestSuite
         self.suite = minium.framework.loader.load_from_case_name('driver', 'test_boot')
         # driver.MiniTestDriver
         self.driver = self.suite._tests[0]
+
+        # 当前页面的校验器, 依赖于driver
+        self.validator = Validator(self.driver)
+        # 当前页面的提取器, 依赖于driver
+        self.extractor = Extractor(self.driver)
 
         # 设置类属性 AssertBase.CONFIG，即用例类的属性  MiniTest.CONFIG
         AssertBase.CONFIG = MiniConfig(config)
@@ -459,16 +468,7 @@ class Boot(minium.MiniTest):
 
     # 根据指定类型，查找元素
     def find_by(self, type, path):
-        # return self.driver.find_element(type2by(type), path)
-        # https://minitest.weixin.qq.com/#/minium/Python/api/Page?id=get_element
-        if type == 'id':
-            return self.page.get_element('#' + path)
-        if type == 'css':
-            return self.page.get_element(path)
-        if type == 'xpath':
-            return self.page.get_element('', xpath = path)
-
-        raise Exception(f"无效查找类型: {type}")
+        return self.driver.find_element_by(type, path)
 
     # 根据任一类型，查找元素
     def find_by_any(self, config):
@@ -585,21 +585,20 @@ class Boot(minium.MiniTest):
         duration = 0.1
         self.do_swipe(x1, ym, x2, ym, duration)
 
-    # 滚动页面(传坐标)
-    # :param pos
-    def scroll_page(self, pos):
-        x, y = pos.split(",", 1)
-        self.page.scroll_to(x, y)
+    # 滚动页面(传y坐标)
+    # :param y
+    def page_scroll(self, y):
+        self.page.scroll_to(y)
 
     # 滚动元素(传元素+坐标)
-    # :param config {by, pos}
+    # :param config {id, css, path, pos}
     def scroll_by(self, config):
         ele = self.find_by_any(config)
         x, y = config['pos'].split(",", 1)
         ele.scroll_to(x, y)
 
     # 切换(传元素+页面序号): 切换 swiper 容器当前的页面
-    # :param config {by, index}
+    # :param config {id, css, path, index}
     def swiper_by(self, config):
         ele = self.find_by_any(config)
         # 切换到第二个tab
@@ -627,13 +626,25 @@ class Boot(minium.MiniTest):
             # ele.move_to(x, y)
             ele.move(x, y, 500, smooth=True)
 
-    # 放大
-    def zoom_in(self, config):
-        self.do_zoom(config, True)
+    # 放大页面
+    def zoom_in(self, _):
+        ele = self.get_root_element()
+        self.do_zoom(ele, True)
 
-    # 缩小
-    def zoom_out(self, config):
-        self.do_zoom(config, False)
+    # 缩小页面
+    def zoom_out(self, _):
+        ele = self.get_root_element()
+        self.do_zoom(ele, False)
+
+    # 放大某元素
+    def zoom_in_by(self, config):
+        ele = self.find_by_any(config)
+        self.do_zoom(ele, True)
+
+    # 缩小某元素
+    def zoom_out_by(self, config):
+        ele = self.find_by_any(config)
+        self.do_zoom(ele, False)
 
     # 构建touch对象
     def build_touch(self, x, y, page_offset = None):
@@ -651,9 +662,7 @@ class Boot(minium.MiniTest):
         }
 
     # 真正的缩放
-    def do_zoom(self, config, is_up):
-        ele = self.find_by_any(config)
-
+    def do_zoom(self, ele, is_up):
         offset = ele.offset
         size = ele.size
         page_offset = ele.page_offset
@@ -863,7 +872,7 @@ class Boot(minium.MiniTest):
         to = replace_var(config['to'])
         _from = replace_var(config['from'])
         # 写文件
-        self.driver.compare_push(_from, to)
+        self.adb.compare_push(_from, to)
 
     # 从手机中拉文件, 即读手机上的文件
     # :param config {from,to} from是android路径

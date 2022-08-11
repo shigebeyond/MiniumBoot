@@ -23,7 +23,7 @@ class ResponseWrap(object):
                 html = etree.fromstring(self.res.text, etree.HTMLParser())
                 return html.cssselect(path)[0].text
 
-            raise Exception(f"无http响应, 不支持查找类型: {type}")
+            return self.driver.find_element_by('css', path).get_value_or_text()
 
         if type == 'xpath':
             # 检查xpath是否最后有属性
@@ -42,10 +42,10 @@ class ResponseWrap(object):
                     return ele.get(prop)
                 return ele.text
 
-            ele = self.driver.find_element(By.XPATH, path)
+            ele = self.driver.find_element_by('xpath', path)
             if prop != '': # 获得属性
                 return ele.attribute(prop)
-            return ele.get_text_or_content()
+            return ele.get_value_or_text()
 
         if type == 'jsonpath':
             if self.res != None:
@@ -55,6 +55,6 @@ class ResponseWrap(object):
             raise Exception(f"无http响应, 不支持查找类型: {type}")
 
         if type == 'id':
-            return self.driver.find_element(type2by(type), path).get_text_or_content()
+            return self.driver.find_element_by('id', path).get_value_or_text()
 
         raise Exception(f"不支持查找类型: {type}")
