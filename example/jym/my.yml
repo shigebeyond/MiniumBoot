@@ -6,3 +6,5 @@
 - sleep: 1
   input_by_xpath:
     '/page/view[1]/view[2]/view[2]/input': 123456
+ - sleep:1
+
