@@ -67,22 +67,9 @@ class Boot(object):
             'input_by_css': self.input_by_css,
             'input_by_xpath': self.input_by_xpath,
             'hide_keyboard': self.hide_keyboard,
-            'swipe': self.swipe,
-            'swipe_up': self.swipe_up,
-            'swipe_down': self.swipe_down,
-            'swipe_left': self.swipe_left,
-            'swipe_right': self.swipe_right,
-            'swipe_vertical': self.swipe_vertical,
-            'swipe_horizontal': self.swipe_horizontal,
             'page_scroll': self.page_scroll,
             'scroll_by': self.scroll_by,
             'swiper_by': self.swiper_by,
-            'move_track_by': self.move_track_by,
-            'move_track': self.move_track,
-            'zoom_in': self.zoom_in,
-            'zoom_out': self.zoom_out,
-            'zoom_in_by': self.zoom_in_by,
-            'zoom_out_by': self.zoom_out_by,
             'tap': self.tap,
             'tap_by': self.tap_by,
             'click_by': self.click_by,
@@ -133,14 +120,26 @@ class Boot(object):
             'extract_by_xpath': self.extract_by_xpath,
             'extract_by_id': self.extract_by_id,
             'extract_by_eval': self.extract_by_eval,
+
+            # 以下步骤是根据官方api封装, 但发现api无用
+            'swipe': self.swipe,
+            'swipe_up': self.swipe_up,
+            'swipe_down': self.swipe_down,
+            'swipe_left': self.swipe_left,
+            'swipe_right': self.swipe_right,
+            'swipe_vertical': self.swipe_vertical,
+            'swipe_horizontal': self.swipe_horizontal,
+            'move_by': self.move_by,
+            'zoom_in': self.zoom_in,
+            'zoom_out': self.zoom_out,
+            'zoom_in_by': self.zoom_in_by,
+            'zoom_out_by': self.zoom_out_by,
         }
         set_var('boot', self)
         # 当前文件
         self.step_file = None
         # 视频/音频文件
         self.video_ele = None
-        # 每个页面的滚动高度
-        self.page_scroll_tops = {}
 
     '''
     执行入口
@@ -489,106 +488,6 @@ class Boot(object):
         selector = config
         return self.page.element_is_exists(selector, max_timeout=5)
 
-    # 屏幕横扫(传坐标)
-    # :param config {from, to, duration}
-    def swipe(self, config):
-        x1, y1 = config['from'].split(",", 1) # 起点位置
-        x2, y2 = config['to'].split(",", 1) # 终点位置
-        duration = 0
-        if 'duration' in config:
-            duration = float(config['duration'])
-        self.do_swipe(x1, y1, x2, y2, duration)
-
-    # 真正的横扫
-    def do_swipe(self, x1, y1, x2, y2, duration):
-        ele = self.get_root_element()
-        # ele = self.find_by('xpath', '/page/view[3]/view[1]/image')
-
-        # 两个手指移动到开始
-        touch1 = self.build_touch(x1, y1, ele)
-        ele.touch_start(touches=[touch1], changed_touches=[touch1])
-
-        # 两个手指移动到结尾
-        time.sleep(duration/2)
-        touch2 = self.build_touch(x2, y2, ele)
-        ele.touch_move(touches=[touch2], changed_touches=[touch2])
-
-        time.sleep(duration/2)
-        ele.touch_end(changed_touches=[touch2])
-
-    # 获得根元素
-    def get_root_element(self):
-        # xpath: https://www.runoob.com/xpath/xpath-syntax.html
-        # ele = self.page.get_element_by_xpath('/') # 报错的
-        ele = self.page.get_element_by_xpath('.')
-        return ele
-
-    # 上滑(传比例)
-    # :param 移动幅度比例
-    def swipe_up(self, move_ratio):
-        if move_ratio == None:
-            move_ratio = 0.5
-        end = (1 - move_ratio) / 2
-        start = 1 - end
-        # self.swipe_vertical(f'0.75,0.25')
-        self.swipe_vertical(f'{start},{end}')
-
-    # 下滑(传比例)
-    # :param 移动幅度比例
-    def swipe_down(self, move_ratio):
-        if move_ratio == None:
-            move_ratio = 0.5
-        start = (1 - move_ratio) / 2
-        end = 1 - start
-        # self.swipe_vertical('0.25,0.75')
-        self.swipe_vertical(f'{start},{end}')
-
-    # 左滑(传y坐标)
-    # :param y y坐标，固定不变，默认为中间
-    def swipe_left(self, y = None):
-        self.swipe_horizontal('0.75,0.25', y)
-
-    # 右滑(传y坐标)
-    # :param y y坐标，固定不变，默认为中间
-    def swipe_right(self, y = None):
-        self.swipe_horizontal('0.25,0.75', y)
-
-    # 垂直方向(上下)滑动
-    # :param y_range_ratios y轴起点/终点位置在屏幕的比例，如 0.2,0.7，即y轴上从屏幕0.2比例处滑到0.7比例处
-    # :param xm x坐标，固定不变，默认为中间
-    def swipe_vertical(self, y_range_ratios, xm = None):
-        # 获取屏幕的宽高
-        size = self.page.inner_size
-        w = size["width"]
-        h = size["height"]
-        # x不变：水平居中
-        if xm == None:
-            xm = int(w * 0.5)
-        # y:按比例计算坐标
-        y1_ratio, y2_ratio = y_range_ratios.split(",", 1) # y轴起点/终点位置在屏幕的比例
-        y1 = int(h * float(y1_ratio))
-        y2 = int(h * float(y2_ratio))
-        duration = 0.1
-        self.do_swipe(xm, y1, xm, y2, duration)
-
-    # 水平方向(左右)滑动
-    # :param x_range_ratios x轴起点/终点位置在屏幕的比例，如 0.2,0.7，即x轴上从屏幕0.2比例处滑到0.7比例处
-    # :param ym y坐标，固定不变，默认为中间
-    def swipe_horizontal(self, x_range_ratios, ym = None):
-        # 获取屏幕的宽高
-        size = self.page.inner_size
-        w = size["width"]
-        h = size["height"]
-        # y不变：水平居中
-        if ym == None:
-            ym = int(h * 0.5)
-        # x:按比例计算坐标
-        x1_ratio, x2_ratio = x_range_ratios.split(",", 1)  # x轴起点/终点位置在屏幕的比例
-        x1 = int(w * float(x1_ratio))
-        x2 = int(w * float(x2_ratio))
-        duration = 0.1
-        self.do_swipe(x1, ym, x2, ym, duration)
-
     # 滚动页面(传y坐标/位置在屏幕中比例)
     # :param y
     def page_scroll(self, y):
@@ -610,7 +509,7 @@ class Boot(object):
             # 加减值
             if op != '':
                 # 起始值
-                y0 = self.get_last_scroll_top(page)
+                y0 = self.page.scroll_y
                 if op == '+': # 加
                     y = y0 + y
                 else: # 减
@@ -619,18 +518,6 @@ class Boot(object):
         if y < 0:
             y = 0
         page.scroll_to(y)
-        self.page_scroll_tops[page.path] = y
-
-    # 获得上一次的滚动高度
-    def get_last_scroll_top(self, page):
-        if page.path in self.page_scroll_tops:
-            return self.page_scroll_tops[page.path]
-        return 0
-
-    # 删除当前页的滚动高度
-    def del_scroll_top(self, page):
-        if page.path in self.page_scroll_tops:
-            del self.page_scroll_tops[page.path]
 
     # 滚动元素(传元素+坐标)
     # :param config {id, css, path, pos}
@@ -645,94 +532,6 @@ class Boot(object):
         ele = self.find_by_any(config)
         # 切换到第二个tab
         ele.swipe_to(config['index'])
-
-    # 移动轨迹(传元素+坐标序列)
-    # :param {id, css, path, pos} 其中pos坐标序列 如x1,y1;x2,y2
-    def move_track_by(self, config):
-        ele = self.find_by_any(config)
-        positions = config['pos']
-        self.do_move_track(ele, positions)
-
-    # 移动轨迹(传坐标序列)
-    # :param positions 坐标序列 如x1,y1;x2,y2
-    def move_track(self, positions):
-        ele = self.get_root_element()
-        self.do_move_track(ele, positions)
-
-    # 真正的移动轨迹
-    def do_move_track(self, ele, positions):
-        positions = positions.split(";")
-        for pos in positions:
-            x, y = pos.split(",", 1)  # 坐标
-            # move(通用)或move_to(仅支持movable-view)
-            # ele.move_to(x, y)
-            ele.move(x, y, 500, smooth=True)
-
-    # 放大页面
-    def zoom_in(self, _):
-        ele = self.get_root_element()
-        self.do_zoom(ele, True)
-
-    # 缩小页面
-    def zoom_out(self, _):
-        ele = self.get_root_element()
-        self.do_zoom(ele, False)
-
-    # 放大某元素
-    def zoom_in_by(self, config):
-        ele = self.find_by_any(config)
-        self.do_zoom(ele, True)
-
-    # 缩小某元素
-    def zoom_out_by(self, config):
-        ele = self.find_by_any(config)
-        self.do_zoom(ele, False)
-
-    # 构建touch对象
-    def build_touch(self, x, y, ele):
-        page_offset = ele.page_offset
-        ox = page_offset.x
-        oy = page_offset.y
-        return {
-            "identifier": 0,
-            "pageX": x,
-            "pageY": y,
-            "clientX": x - ox,
-            "clientY": y - oy,
-        }
-
-    # 真正的缩放
-    def do_zoom(self, ele, is_up):
-        offset = ele.offset
-        size = ele.size
-        width = size["width"]
-        height = size["height"]
-
-        xm = offset["left"] + width * 0.5
-        ys = offset["top"]
-        start1, start2, end1, end2 = self.get_zoom_y_range_ratios(is_up)
-
-        # 两个手指移动到开始
-        start_touch1 = self.build_touch(xm, ys + height * start1, ele)
-        start_touch2 = self.build_touch(xm, ys + height * start2, ele)
-        ele.touch_start(touches=[start_touch1, start_touch2], changed_touches=[start_touch1, start_touch2])
-
-        # 两个手指移动到结尾
-        time.sleep(0.1)
-        end_touch1 = self.build_touch(xm, ys + height * end1, ele)
-        end_touch2 = self.build_touch(xm, ys + height * end2, ele)
-        ele.touch_move(touches=[end_touch1, end_touch2], changed_touches=[end_touch1, end_touch2])
-
-        time.sleep(0.1)
-        ele.touch_end(changed_touches=[end_touch1, end_touch2])
-
-    # 获得缩放时2个手指的y轴起点/终点位置在屏幕的比例，分别是: 两个手指的起点y比例, 两个手指的终点y比例
-    def get_zoom_y_range_ratios(self, is_up):
-        if is_up: # 放大：从中间到两边
-            return 0.5, 0.5, 9.9, 0.1
-
-        # 缩小: 从两边到中间
-        return 9.9, 0.1, 0.5, 0.5
 
     # 长按
     # :param config {id, css, xpath}
@@ -874,7 +673,6 @@ class Boot(object):
     # 跳转到指定页面, 但是不能跳到 tabbar 页面
     def goto(self, url):
         self.app.navigate_to(url)
-        self.del_scroll_top(self.page)
         self.print_current_page()
 
     # 跳转到 tabBar 页面, 并关闭其他所有非 tabBar 页面
@@ -892,7 +690,6 @@ class Boot(object):
 
     # 返回键
     def back(self, _):
-        self.del_scroll_top(self.page)
         self.app.navigate_back()
 
     # 读剪切板
@@ -960,6 +757,7 @@ class Boot(object):
         page = self.page
         log.debug('current_page: ' + str(page) + ', data: ' + json.dumps(page.data))
 
+    ##################################### http请求 ###########################################
     # 设置基础url
     def base_url(self, url):
         self._base_url = url
@@ -1121,6 +919,190 @@ class Boot(object):
 
     def extract_by_eval(self, fields):
         return self.extractor.run_eval(fields)
+
+    ##################################### 以下步骤是根据官方api封装, 但发现api无用 ###########################################
+    # 获得根元素
+    def get_root_element(self):
+        # xpath: https://www.runoob.com/xpath/xpath-syntax.html
+        # ele = self.page.get_element_by_xpath('/') # 报错的
+        ele = self.page.get_element_by_xpath('.')
+        return ele
+
+    # 屏幕横扫(传坐标)
+    # :param config {from, to, duration}
+    def swipe(self, config):
+        x1, y1 = config['from'].split(",", 1) # 起点位置
+        x2, y2 = config['to'].split(",", 1) # 终点位置
+        duration = 0
+        if 'duration' in config:
+            duration = float(config['duration'])
+        self.do_swipe(x1, y1, x2, y2, duration)
+
+    # 真正的横扫
+    def do_swipe(self, x1, y1, x2, y2, duration):
+        ele = self.get_root_element()
+        # ele = self.find_by('xpath', '/page/view[3]/view[1]/image')
+
+        # 两个手指移动到开始
+        touch1 = self.build_touch(x1, y1, ele)
+        ele.touch_start(touches=[touch1], changed_touches=[touch1])
+
+        # 两个手指移动到结尾
+        time.sleep(duration/2)
+        touch2 = self.build_touch(x2, y2, ele)
+        ele.touch_move(touches=[touch2], changed_touches=[touch2])
+
+        time.sleep(duration/2)
+        ele.touch_end(changed_touches=[touch2])
+
+    # 上滑(传比例)
+    # :param 移动幅度比例
+    def swipe_up(self, move_ratio):
+        if move_ratio == None:
+            move_ratio = 0.5
+        end = (1 - move_ratio) / 2
+        start = 1 - end
+        # self.swipe_vertical(f'0.75,0.25')
+        self.swipe_vertical(f'{start},{end}')
+
+    # 下滑(传比例)
+    # :param 移动幅度比例
+    def swipe_down(self, move_ratio):
+        if move_ratio == None:
+            move_ratio = 0.5
+        start = (1 - move_ratio) / 2
+        end = 1 - start
+        # self.swipe_vertical('0.25,0.75')
+        self.swipe_vertical(f'{start},{end}')
+
+    # 左滑(传y坐标)
+    # :param y y坐标，固定不变，默认为中间
+    def swipe_left(self, y = None):
+        self.swipe_horizontal('0.75,0.25', y)
+
+    # 右滑(传y坐标)
+    # :param y y坐标，固定不变，默认为中间
+    def swipe_right(self, y = None):
+        self.swipe_horizontal('0.25,0.75', y)
+
+    # 垂直方向(上下)滑动
+    # :param y_range_ratios y轴起点/终点位置在屏幕的比例，如 0.2,0.7，即y轴上从屏幕0.2比例处滑到0.7比例处
+    # :param xm x坐标，固定不变，默认为中间
+    def swipe_vertical(self, y_range_ratios, xm = None):
+        # 获取屏幕的宽高
+        size = self.page.inner_size
+        w = size["width"]
+        h = size["height"]
+        # x不变：水平居中
+        if xm == None:
+            xm = int(w * 0.5)
+        # y:按比例计算坐标
+        y1_ratio, y2_ratio = y_range_ratios.split(",", 1) # y轴起点/终点位置在屏幕的比例
+        y1 = int(h * float(y1_ratio))
+        y2 = int(h * float(y2_ratio))
+        duration = 0.1
+        self.do_swipe(xm, y1, xm, y2, duration)
+
+    # 水平方向(左右)滑动
+    # :param x_range_ratios x轴起点/终点位置在屏幕的比例，如 0.2,0.7，即x轴上从屏幕0.2比例处滑到0.7比例处
+    # :param ym y坐标，固定不变，默认为中间
+    def swipe_horizontal(self, x_range_ratios, ym = None):
+        # 获取屏幕的宽高
+        size = self.page.inner_size
+        w = size["width"]
+        h = size["height"]
+        # y不变：水平居中
+        if ym == None:
+            ym = int(h * 0.5)
+        # x:按比例计算坐标
+        x1_ratio, x2_ratio = x_range_ratios.split(",", 1)  # x轴起点/终点位置在屏幕的比例
+        x1 = int(w * float(x1_ratio))
+        x2 = int(w * float(x2_ratio))
+        duration = 0.1
+        self.do_swipe(x1, ym, x2, ym, duration)
+
+    # 移动元素(传元素+坐标序列)
+    # :param {id, css, path, pos} 其中pos坐标序列 如x1,y1;x2,y2
+    def move_by(self, config):
+        # 检查元素
+        ele = self.find_by_any(config)
+
+        # 位移
+        positions = config['pos']
+        positions = positions.split(";")
+        for pos in positions:
+            x, y = pos.split(",", 1)  # 坐标
+            x = int(x)
+            y = int(y)
+            # 用move(通用)或move_to(仅支持movable-view)方法
+            # ele.move_to(x, y)
+            ele.move(x, y, 500, smooth=True)
+
+    # 放大页面
+    def zoom_in(self, _):
+        ele = self.get_root_element()
+        self.do_zoom(ele, True)
+
+    # 缩小页面
+    def zoom_out(self, _):
+        ele = self.get_root_element()
+        self.do_zoom(ele, False)
+
+    # 放大某元素
+    def zoom_in_by(self, config):
+        ele = self.find_by_any(config)
+        self.do_zoom(ele, True)
+
+    # 缩小某元素
+    def zoom_out_by(self, config):
+        ele = self.find_by_any(config)
+        self.do_zoom(ele, False)
+
+    # 构建touch对象
+    def build_touch(self, x, y, ele):
+        page_offset = ele.page_offset
+        ox = page_offset.x
+        oy = page_offset.y
+        return {
+            "identifier": 0,
+            "pageX": x,
+            "pageY": y,
+            "clientX": x - ox,
+            "clientY": y - oy,
+        }
+
+    # 真正的缩放
+    def do_zoom(self, ele, is_up):
+        offset = ele.offset
+        size = ele.size
+        width = size["width"]
+        height = size["height"]
+
+        xm = offset["left"] + width * 0.5
+        ys = offset["top"]
+        start1, start2, end1, end2 = self.get_zoom_y_range_ratios(is_up)
+
+        # 两个手指移动到开始
+        start_touch1 = self.build_touch(xm, ys + height * start1, ele)
+        start_touch2 = self.build_touch(xm, ys + height * start2, ele)
+        ele.touch_start(touches=[start_touch1, start_touch2], changed_touches=[start_touch1, start_touch2])
+
+        # 两个手指移动到结尾
+        time.sleep(0.1)
+        end_touch1 = self.build_touch(xm, ys + height * end1, ele)
+        end_touch2 = self.build_touch(xm, ys + height * end2, ele)
+        ele.touch_move(touches=[end_touch1, end_touch2], changed_touches=[end_touch1, end_touch2])
+
+        time.sleep(0.1)
+        ele.touch_end(changed_touches=[end_touch1, end_touch2])
+
+    # 获得缩放时2个手指的y轴起点/终点位置在屏幕的比例，分别是: 两个手指的起点y比例, 两个手指的终点y比例
+    def get_zoom_y_range_ratios(self, is_up):
+        if is_up: # 放大：从中间到两边
+            return 0.5, 0.5, 9.9, 0.1
+
+        # 缩小: 从两边到中间
+        return 9.9, 0.1, 0.5, 0.5
 
 
 # cli入口
