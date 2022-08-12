@@ -80,26 +80,38 @@ MiniumBoot 步骤配置目录/step-*.yml
 
 1. init_driver: 初始化driver, 必须定义在第一个步骤中的第一个动作
 ```yaml
+# 初始化driver
 - init_driver:
     debug_mode: debug
     enable_app_log: true
-    project_path: /Users/sherlock/github/miniprogram-demo
-    dev_tool_path: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
-    platform: ide
+    # F:\微信web开发者工具\cli.bat auto --project "F:\project\jym_wechat" --auto-port 9420
+    project_path: F:\project\jym_wechat
+    dev_tool_path: F:\微信web开发者工具\cli.bat # windows
     app: wx
     close_ide: false
-    test_port: 9421
+    test_port: 9420
     assert_capture: true
     use_push: true
     auto_relaunch: true
-    remote_connect_timeout: 10
-    account_info:
-      wx_nick_name: locker
-      open_id: o6zAJs_pwr**********aROZDjiw
-    # android
-    device_desire:
-      serial: f978cc97 # Android设备号 adb devices查看
-      uiautomator: UiAutomator2
+    request_timeout: 60
+    remote_connect_timeout: 300
+#    account_info:
+#      wx_nick_name: locker
+#      open_id: o6zAJs_pwr**********aROZDjiw
+    platform: ide # 小程序运行的平台，可选值为：ide, Android, IOS
+    # 当 platform = Android 时
+#    device_desire:
+#      serial: f978cc97 # Android设备号 adb devices查看
+#      uiautomator: UiAutomator2
+    # 当 platform = IOS 时
+#    device_desire:
+#      wda_project_path: /Users/sherlock/.npm-global/lib/node_modules/appium/node_modules/appium-webdriveragent
+#      os_type: ios
+#      device_info:
+#        udid: aee531018e668ff1aad*************2924e8
+#        model: iPhone 6
+#        version: 12.2.5
+#        name: sherlock's iPhone
 ```
 
 2. close_driver: 关闭driver
