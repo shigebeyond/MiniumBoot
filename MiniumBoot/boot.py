@@ -69,6 +69,10 @@ class Boot(object):
             'hide_keyboard': self.hide_keyboard,
             'page_scroll': self.page_scroll,
             'scroll_by': self.scroll_by,
+            'scroll_up_by': self.scroll_up_by,
+            'scroll_down_by': self.scroll_down_by,
+            'scroll_left_by': self.scroll_left_by,
+            'scroll_right_by': self.scroll_right_by,
             'swiper_by': self.swiper_by,
             'tap': self.tap,
             'tap_by': self.tap_by,
@@ -488,35 +492,51 @@ class Boot(object):
         selector = config
         return self.page.element_is_exists(selector, max_timeout=5)
 
+    def calculate_new_scroll_pos(self, xy, wh, old_xy):
+        '''
+        # 计算新的滚动位置
+        :param xy: x或y坐标/屏幕比例+增减
+        :param wh: 宽或高
+        :param old_xy: 旧的x或y坐标
+        :return:
+        '''
+        # 无变化
+        if xy == None or xy == '':
+            return old_xy
+
+        # 字符串或负数
+        if isinstance(xy, str) or xy < 0:
+            xy = str(xy)  # 处理负数
+            # 加减符
+            op = ''
+            if xy.startswith('+') or xy.startswith('-'):
+                op = xy[0]
+                xy = xy[1:]
+            # 根据位置在屏幕中比例，计算坐标值
+            if xy.endswith('%'):
+                ratio = float(xy[:-1]) / 100
+                xy = wh * ratio
+            else:
+                xy = int(xy)
+            # 加减值
+            if op != '':
+                # 起始值
+                y0 = old_xy
+                if op == '+':  # 加
+                    xy = y0 + xy
+                else:  # 减
+                    xy = y0 - xy
+        # 最小也只能为0
+        if xy < 0:
+            xy = 0
+        return xy
+
     # 滚动页面(传y坐标/位置在屏幕中比例)
     # :param y
     def page_scroll(self, y):
         page = self.page
-        # 字符串或负数
-        if isinstance(y, str) or y < 0:
-            y = str(y) # 处理负数
-            # 加减符
-            op = ''
-            if y.startswith('+') or y.startswith('-'):
-                op = y[0]
-                y = y[1:]
-            # 根据位置在屏幕中比例，计算坐标值
-            if y.endswith('%'):
-                ratio = float(y[:-1]) / 100
-                y = page.inner_size["height"] * ratio
-            else:
-                y = int(y)
-            # 加减值
-            if op != '':
-                # 起始值
-                y0 = self.page.scroll_y
-                if op == '+': # 加
-                    y = y0 + y
-                else: # 减
-                    y = y0 - y
-        # 最小也只能为0
-        if y < 0:
-            y = 0
+        # 计算新的滚动位置
+        y = self.calculate_new_scroll_pos(y, page.inner_size["height"], page.scroll_y)
         page.scroll_to(y)
 
     # 滚动元素(传元素+坐标)
@@ -524,7 +544,30 @@ class Boot(object):
     def scroll_by(self, config):
         ele = self.find_by_any(config)
         x, y = config['pos'].split(",", 1)
+        # 计算新的滚动位置
+        x = self.calculate_new_scroll_pos(x, ele.size['width'], ele.scroll_left)
+        y = self.calculate_new_scroll_pos(y, ele.size['height'], ele.scroll_top)
         ele.scroll_to(x, y)
+
+    # 向上滚动元素
+    def scroll_up_by(self, config):
+        config['pos'] = ',-50%'
+        self.scroll_by(config)
+
+    # 向下滚动元素
+    def scroll_down_by(self, config):
+        config['pos'] = ',+50%'
+        self.scroll_by(config)
+
+    # 向左滚动元素
+    def scroll_left_by(self, config):
+        config['pos'] = '+50%,'
+        self.scroll_by(config)
+
+    # 向右滚动元素
+    def scroll_right_by(self, config):
+        config['pos'] = '-50%,'
+        self.scroll_by(config)
 
     # 切换(传元素+页面序号): 切换 swiper 容器当前的页面
     # :param config {id, css, path, index}

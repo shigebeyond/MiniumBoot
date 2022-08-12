@@ -178,11 +178,45 @@ scroll_by:
     # 元素查找方式(id/css/xpath多选一) : 查找的值
     #id: line
     xpath: //view[@id='line']
-    # 移动的坐标
-    pos: 100,200
+    # 移动的位置/位移
+    pos: 100,200 # 绝对位置(坐标)
+    pos: +100,-200 # 相对位移
+    pos: +30%,50% # 元素高度的比例
 ```
 
-11. swiper_by: 切换 swiper 容器当前的页面
+11. scroll_up_by: 向上滚动元素
+```yaml
+scroll_up_by:
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
+```
+    
+12. scroll_down_by: 向下滚动元素
+```yaml
+scroll_down_by:
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
+```
+    
+13. scroll_left_by: 向左滚动元素
+```yaml
+scroll_left_by:
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
+```
+    
+14. scroll_right_by: 向右滚动元素
+```yaml
+scroll_right_by:
+    # 元素查找方式(id/css/xpath多选一) : 查找的值
+    #id: line
+    xpath: //view[@id='line']
+```
+
+15. swiper_by: 切换 swiper 容器当前的页面
 ```yaml
 swiper_by:
     # 元素查找方式(id/css/xpath多选一) : 查找的值
@@ -192,7 +226,7 @@ swiper_by:
     index: 2
 ```
 
-12. long_press_by: 长按某元素
+16. long_press_by: 长按某元素
 ```yaml
 long_press_by:
     # 元素查找方式(id/css/xpath多选一) : 查找的值
@@ -200,12 +234,12 @@ long_press_by:
     xpath: //view[@id='line']
 ```
 
-13. tap: 敲击屏幕(传坐标)
+17. tap: 敲击屏幕(传坐标)
 ```yaml
 tap: 200,200
 ```
 
-14. tap_by: 敲击元素
+18. tap_by: 敲击元素
 ```yaml
 tap_by:
     # 元素查找方式(id/css/xpath多选一) : 查找的值
@@ -214,7 +248,7 @@ tap_by:
     duration: 10
 ```
 
-15. click_by/click_by_if_exist: 点击元素; 
+19. click_by/click_by_if_exist: 点击元素; 
 ```yaml
 click_by:
   # 元素查找方式(id/css/xpath多选一) : 查找的值
@@ -223,7 +257,7 @@ click_by:
 
 如果点击之前要先判断元素是否存在，则换用 click_by_if_exist
 
-16. allow: 处理授权弹窗-允许某权限
+20. allow: 处理授权弹窗-允许某权限
 ```yaml
 allow: login # 授权类型
 ```
@@ -242,86 +276,86 @@ allow: login # 授权类型
 | send_subscribe_message | 允许发送订阅消息 |
 | get_we_run_data | 处理获取微信运动数据确认弹框 |
 
-17. forbid: 处理授权弹窗-禁止某权限
+21. forbid: 处理授权弹窗-禁止某权限
 ```yaml
 forbid: login # 授权类型
 ```
 
 授权类型, 参考上一节`allow`动作
 
-18. handle_modal: 点击弹窗的按钮
+22. handle_modal: 点击弹窗的按钮
 ```yaml
 handle_modal: # 按钮文本，可省，默认为"确定"
 handle_modal: 确定
 handle_modal: 取消
 ```
 
-19. deactive: 使微信进入后台一段时间, 再切回前台
+23. deactive: 使微信进入后台一段时间, 再切回前台
 ```yaml
 deactive:
 ```
 
-20. set_orientation: 设置屏幕方向
+24. set_orientation: 设置屏幕方向
 ```yaml
 set_orientation: true # 是否竖屏, 否则横屏
 ```
 
-21. set_location: 设置地理位置
+25. set_location: 设置地理位置
 ```yaml
 set_location: 49,123 # 纬度,经度
 ```
 
-22. screenshot: 整个窗口截图存为png; 
+26. screenshot: 整个窗口截图存为png; 
 ```yaml
 screenshot:
     save_dir: downloads # 保存的目录，默认为 downloads
     save_file: test.png # 保存的文件名，默认为:时间戳.png
 ```
 
-23. call_wx_method: 调用微信函数
+27. call_wx_method: 调用微信函数
 ```yaml
 call_wx_method: scanCode
 ```
 
-24. goto: 跳转到指定页面, 但是不能跳到 tabbar 页面
+28. goto: 跳转到指定页面, 但是不能跳到 tabbar 页面
 ```yaml
 goto: /pages/home/index # 页面url
 ```
 
-25. switch_tab: 跳转到 tabBar 页面, 并关闭其他所有非 tabBar 页面
+29. switch_tab: 跳转到 tabBar 页面, 并关闭其他所有非 tabBar 页面
 ```yaml
 switch_tab: /pages/home/index # 页面url
 switch_tab: 1 # 页面序号, 从0开始
 ```
 
-26. execute_js: 执行js; 
+30. execute_js: 执行js; 
 ```yaml
 execute_js: console.log('hello world')
 ```
 
-27. back: 返回键; 
+31. back: 返回键; 
 ```yaml
 back: 
 ```
 
-28. get_clipboard: 读剪切板内容; 
+32. get_clipboard: 读剪切板内容; 
 ```yaml
 get_clipboard: name # 参数为记录剪切板内容的变量名
 ```
 
-29. set_clipboard: 写剪切板内容; 
+33. set_clipboard: 写剪切板内容; 
 ```yaml
 set_clipboard: hello world $name # 参数是写入内容，可带参数
 ```
 
-30. push_file:推文件到手机上, 即写手机上文件; 
+34. push_file:推文件到手机上, 即写手机上文件; 
 ```yaml
 push_file:
     to: /storage/emulated/0/documents/test/a.txt # 写入的手机上的文件
     from: a.txt # 写入内容的本地来源文件
 ```
 
-31. pull_file:从手机中拉文件, 即读手机上的文件; 
+35. pull_file:从手机中拉文件, 即读手机上的文件; 
 ```yaml
 pull_file:
     from: /storage/emulated/0/documents/test/a.txt # 读取的手机上的文件
@@ -329,44 +363,44 @@ pull_file:
 print: $content
 ```
 
-32. pull_down_refresh: 下拉刷新
+36. pull_down_refresh: 下拉刷新
 ```yaml
 pull_down_refresh:
 ```
 
-33. vibrate: 震动
+37. vibrate: 震动
 ```yaml
 vibrate: true # 是否长震,否则短震
 ```
 
-34. scan_code: 扫码
+38. scan_code: 扫码
 ```yaml
 scan_code:
 ```
 
-35. send_sms:发送短信; 
+39. send_sms:发送短信; 
 ```yaml
 send_sms:
     phone: 13475556022
     content: hello $name
 ```
 
-36. print_system_info: 打印系统信息
+40. print_system_info: 打印系统信息
 ```yaml
 print_system_info:
 ```
 
-37. print_all_pages: 打印所有页面
+41. print_all_pages: 打印所有页面
 ```yaml
 print_all_pages:
 ```
 
-38. print_current_page: 打印当前页面
+42. print_current_page: 打印当前页面
 ```yaml
 print_current_page:
 ```
 
-39. for: 循环; 
+43. for: 循环; 
 for动作下包含一系列子步骤，表示循环执行这系列子步骤；变量`for_i`记录是第几次迭代（从1开始）
 ```yaml
 # 循环3次
@@ -384,7 +418,7 @@ for:
     sleep: 2
 ```
 
-40. once: 只执行一次，等价于 `for(1)`; 
+44. once: 只执行一次，等价于 `for(1)`; 
 once 结合 moveon_if，可以模拟 python 的 `if` 语法效果
 ```yaml
 once:
@@ -394,31 +428,31 @@ once:
     sleep: 2
 ```
 
-41. break_if: 满足条件则跳出循环; 
+45. break_if: 满足条件则跳出循环; 
 只能定义在for循环的子步骤中
 ```yaml
 break_if: for_i>2 # 条件表达式，python语法
 ```
 
-42. moveon_if: 满足条件则往下走，否则跳出循环; 
+46. moveon_if: 满足条件则往下走，否则跳出循环; 
 只能定义在for循环的子步骤中
 ```yaml
 moveon_if: for_i<=2 # 条件表达式，python语法
 ```
 
-43. moveon_if_exist_by: 如果检查元素存在 则往下走，否则跳出循环; 
+47. moveon_if_exist_by: 如果检查元素存在 则往下走，否则跳出循环; 
 只能定义在for循环的子步骤中
 ```yaml
 moveon_if_exist_by:
     id: com.shikee.shikeeapp:id/button1
 ```
 
-44. include: 包含其他步骤文件，如记录公共的步骤，或记录配置数据(如用户名密码); 
+48. include: 包含其他步骤文件，如记录公共的步骤，或记录配置数据(如用户名密码); 
 ```yaml
 include: part-common.yml
 ```
 
-45. set_vars: 设置变量; 
+49. set_vars: 设置变量; 
 ```yaml
 set_vars:
   name: shi
@@ -426,17 +460,17 @@ set_vars:
   birthday: 5-27
 ```
 
-46. print_vars: 打印所有变量; 
+50. print_vars: 打印所有变量; 
 ```yaml
 print_vars:
 ```
 
-47. base_url: 设置基础url
+51. base_url: 设置基础url
 ```yaml
 base_url: https://www.taobao.com/
 ```
 
-48. get: 发get请求, 但无跳转; 
+52. get: 发get请求, 但无跳转; 
 ```yaml
 get:
     url: $dyn_data_url # url,支持写变量
@@ -444,7 +478,7 @@ get:
       dyn_data: "json.loads(response.text[16:-1])" # 变量response是响应对象
 ```
 
-49. post: 发post请求, 但无跳转; 
+53. post: 发post请求, 但无跳转; 
 ```yaml
 post:
     url: http://admin.jym1.com/store/add_store # url,支持写变量
@@ -455,7 +489,7 @@ post:
       store_logo_url: '$img'
 ```
 
-50. upload: 上传文件; 
+54. upload: 上传文件; 
 ```yaml
 upload: # 上传文件/图片
     url: http://admin.jym1.com/upload/common_upload_img/store_img
@@ -466,7 +500,7 @@ upload: # 上传文件/图片
       img: $.data.url
 ```
 
-51. download: 下载文件; 
+55. download: 下载文件; 
 变量`download_file`记录最新下载的单个文件
 ```yaml
 download:
@@ -596,7 +630,7 @@ extract_by_eval:
 ```
 
 ## 存疑的动作
-> 注: 以下动作是根据minium官方api `move()/touchstart()/touchmove()/touchend()`封装的, 但我测试时发现移动失败, 因此这部分官方api应该是无效的, 等啥时候有效就可以启用
+> 注: 以下动作是用来触发滑动手势, 是根据minium官方api `move()/touchstart()/touchmove()/touchend()`封装的, 但我测试时发现移动失败, 因此这部分官方api应该是无效的, 等啥时候有效就可以启用
 
 1. swipe: 屏幕横扫(传坐标)
 ```yaml
