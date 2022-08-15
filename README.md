@@ -69,6 +69,8 @@ MiniumBoot 步骤配置目录/step-*.yml
 
 [demo](https://github.com/shigebeyond/MiniumBoot/blob/main/example/)
 
+[demo视频](https://www.zhihu.com/zvideo/1542517561199009793)
+
 ## 配置详解
 支持通过yaml来配置执行的步骤;
 
