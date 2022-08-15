@@ -24,7 +24,7 @@ from driver import MiniTestDriver
 # 扩展BaseElement方法
 def get_value_or_text(self):
     r = self.value
-    if r != '':
+    if r != None and r != '':
         return r
     return self.inner_text
 minium.BaseElement.get_value_or_text = get_value_or_text

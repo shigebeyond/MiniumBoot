@@ -17,7 +17,7 @@
 #    account_info:
 #      wx_nick_name: locker
 #      open_id: o6zAJs_pwr**********aROZDjiw
-    platform: ide # Android
+    platform: ide # 小程序运行的平台，可选值为：ide, Android, IOS
     # android
 #    device_desire:
 #      serial: f978cc97 # Android设备号 adb devices查看
