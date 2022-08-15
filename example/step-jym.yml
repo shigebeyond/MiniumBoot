@@ -35,9 +35,11 @@
 #  print_all_pages:
 #  print_current_page:
 # 首页tab
-#- include: jym/home.yml
-# 我的推广tab
-#- include: jym/share.yml
-# 我的tab
+- include: jym/home.yml
+## 我的推广tab
+- include: jym/share.yml
+## 我的tab: 原来的身份是会员端，my.yml会切换为市场人员端
 - include: jym/my.yml
+# 医师风采
+- include: jym/doctor.yml
   sleep: 4

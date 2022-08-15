@@ -655,7 +655,7 @@ class Boot(object):
     # 点击弹窗的按钮
     # :param btn_text 按钮文本或bool
     def handle_modal(self, btn_text = "确定"):
-        if issubclass(btn_text, bool):
+        if isinstance(btn_text, bool):
             if btn_text:
                 btn_text = '确定'
             else:
@@ -1172,7 +1172,8 @@ def main():
         log.error(f"异常环境:当前步骤文件为 {boot.step_file}, 当前page为 {page}", exc_info = ex)
         raise ex
     finally:
-        boot.close_driver()
+        boot
+        #boot.close_driver()
 
 if __name__ == '__main__':
     main()

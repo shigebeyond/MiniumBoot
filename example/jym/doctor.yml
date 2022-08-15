@@ -1,0 +1,40 @@
+- switch_tab: 1
+- sleep: 1
+  page_scroll: +100%
+- sleep: 1
+  page_scroll: 0
+  click_by:
+    xpath: /page/view/doctor-list[4]//navigator
+- sleep: 1
+  click_by:
+    xpath: /page/view[5]/view
+- sleep: 1
+  input_by_xpath:
+    '/page/view[2]/view[3]/view[2]/input': 麦麦
+- sleep: 1
+  click_by:  #选择时间
+    id: date_show
+    #css: '#date_show'
+- sleep: 1
+  click_by:  # 确认选择
+    css: '.van-picker__confirm'
+- sleep: 1
+  click_by:  #选择分
+    id: time_show
+- click_by:  # 确认选择
+    #css: '.van-picker__confirm:last-child' # bug: 定位不了
+    xpath: "(//view[@class='van-picker__confirm picker-index--van-picker__confirm'])[2]"
+- sleep: 1
+  input_by_xpath:
+    '/page/view[4]/textarea': 测试用例
+- sleep: 1
+  click_by:  # 确认选择
+    xpath:  /page/view[6]/view
+- sleep: 1
+  handle_modal: 允许
+- sleep: 5
+  back:
+- back:
+
+
+

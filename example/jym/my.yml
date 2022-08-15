@@ -6,12 +6,26 @@
 - sleep: 1
   input_by_xpath:
     '/page/view[1]/view[2]/view[2]/input': 123456
- - sleep:1
+- sleep: 1
+  back:
+- sleep: 1
+  click_by: # 银行卡管理
+    xpath: /page/view[3]/button[3]
+- sleep: 1
+  click_by:  # 银行卡管理
+    xpath: /page/view/button
+- sleep: 1
+  back:
+- sleep: 1
+  back:
+- sleep: 1
+  click_by:  #切换身份
+    #xpath: /page/view[1]/view[3]
+    css: view.ui_change
+- sleep: 1
   click_by:
-  xpath: /page/view[1]/view[1]/view[2]/view
-  - sleep:1
-# input_by_xpath:
-  #  '/page/view[2]/view/view/input': 123456
+    xpath: /page/view[2]/view[3]/view[1]
+- sleep: 1
+  back:
 
-
-   # /page/view[2]/view/view/image
+#/page/view[1]/van-tabs//view/van-sticky/view/scroll-view/view/view[3]
