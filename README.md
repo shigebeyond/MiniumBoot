@@ -14,7 +14,7 @@ Minium是微信小程序的自动化测试工具，但是要写python代码；
 框架提供`include`机制，用来加载并执行其他的步骤yaml，一方面是功能解耦，方便分工，一方面是功能复用，提高效率与质量，从而推进测试整体的工程化。
 
 ## 特性
-1. 基于 Minium
+1. 基于 Minium 1.2.8
 2. 支持通过yaml来配置执行的步骤，简化了自动化测试开发:
 每个步骤可以有多个动作，但单个步骤中动作名不能相同（yaml语法要求）;
 动作代表小程序上的一种操作，如tap/swipe/scoll等等;
@@ -521,6 +521,12 @@ download:
     url: https://img.alicdn.com/tfscom/TB1t84NPuL2gK0jSZPhXXahvXXa.jpg_q90.jpg
     save_dir: downloads # 保存的目录，默认为 downloads
     save_file: test.jpg # 保存的文件名，默认为url中最后一级的文件名
+```
+
+56. exec: 执行命令, 可用于执行 HttpBoot/SeleniumBoot/AppiumBoot/MiniumBoot 等命令，以便打通多端的用例流程
+```yaml
+exec: ls
+exec: SeleniumBoot test.yml
 ```
 
 ## 校验器

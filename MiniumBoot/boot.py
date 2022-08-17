@@ -124,6 +124,7 @@ class Boot(object):
             'extract_by_xpath': self.extract_by_xpath,
             'extract_by_id': self.extract_by_id,
             'extract_by_eval': self.extract_by_eval,
+            'exec': self.exec,
 
             # 以下步骤是根据官方api封装, 但发现api无用
             'swipe': self.swipe,
@@ -1146,6 +1147,11 @@ class Boot(object):
 
         # 缩小: 从两边到中间
         return 9.9, 0.1, 0.5, 0.5
+
+    # 执行命令
+    def exec(self, cmd):
+        output = os.popen(cmd).read()
+        log.debug(f"执行命令: {cmd} | 结果: {output}")
 
 
 # cli入口
