@@ -5,7 +5,7 @@ import re
 from lxml import etree
 from requests import Response
 from jsonpath import jsonpath
-from driver import MiniTestDriver
+from MiniumBoot.driver import MiniTestDriver
 
 # 响应包装器
 class ResponseWrap(object):

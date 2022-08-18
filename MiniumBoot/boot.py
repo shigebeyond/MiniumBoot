@@ -304,7 +304,7 @@ class Boot(object):
         self.appjson = read_json(path)
 
         # TestSuite
-        self.suite = minium.framework.loader.load_from_case_name('driver', 'test_boot')
+        self.suite = minium.framework.loader.load_from_case_name('MiniumBoot.driver', 'test_boot')
         # driver.MiniTestDriver
         self.driver = self.suite._tests[0]
 
