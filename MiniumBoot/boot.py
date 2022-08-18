@@ -19,7 +19,7 @@ from minium.framework.miniconfig import MiniConfig
 from minium.framework.assertbase import AssertBase
 from at.core.adbwrap import AdbWrap
 from minium.native.wx_native.androidnative import WXAndroidNative
-from driver import MiniTestDriver
+from MiniumBoot.driver import MiniTestDriver
 
 # 扩展BaseElement方法
 def get_value_or_text(self):

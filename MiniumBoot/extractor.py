@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from requests import Response
-from driver import MiniTestDriver
+from MiniumBoot.driver import MiniTestDriver
 from MiniumBoot.response_wrapper import ResponseWrap
 from pyutilb.util import *
 import json # eval 可能会用到

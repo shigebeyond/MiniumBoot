@@ -3,7 +3,7 @@
 
 import re
 from MiniumBoot.response_wrapper import ResponseWrap
-from driver import MiniTestDriver
+from MiniumBoot.driver import MiniTestDriver
 from requests import Response
 from pyutilb import log
 
