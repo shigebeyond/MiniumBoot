@@ -20,7 +20,7 @@ from minium.framework.assertbase import AssertBase
 from at.core.adbwrap import AdbWrap
 from minium.native.wx_native.androidnative import WXAndroidNative
 from MiniumBoot.driver import MiniTestDriver
-
+from minium.framework.exception import MiniElementNotFoundError
 
 # 扩展BaseElement方法
 def get_value_or_text(self):
@@ -111,6 +111,7 @@ class Boot(object):
             'break_if': self.break_if,
             'moveon_if': self.moveon_if,
             'moveon_if_exist_by': self.moveon_if_exist_by,
+            'break_if_exist_by': self.break_if_exist_by,
             'break_if_not_exist_by': self.break_if_not_exist_by,
             'include': self.include,
             'set_vars': self.set_vars,
@@ -400,6 +401,11 @@ class Boot(object):
         if not self.exist_by_any(config):
             raise BreakException(config)
 
+    # 跳出for循环
+    def break_if_exist_by(self, config):
+        if self.exist_by_any(config):
+            raise BreakException(config)
+
     # 加载并执行其他步骤文件
     def include(self, step_file):
         self.run_1file(step_file, True)
@@ -496,10 +502,21 @@ class Boot(object):
                 return self.find_by(type, path)
         raise Exception(f"没有查找类型: {config}")
 
+    # 根据指定类型，检查元素是否存在
+    def exist_by(self, type, path):
+        try:
+            self.find_by(type, path)
+            return True
+        except MiniElementNotFoundError:
+            return False
+
     # 根据任一类型，检查元素是否存在
     def exist_by_any(self, config):
-        selector = config
-        return self.page.element_is_exists(selector, max_timeout=5)
+        try:
+            self.find_by_any(config)
+            return True
+        except MiniElementNotFoundError:
+            return False
 
     def calculate_new_scroll_pos(self, xy, wh, old_xy):
         '''
