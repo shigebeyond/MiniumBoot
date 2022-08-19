@@ -46,6 +46,9 @@ export PATH="$PATH:/home/shi/.local/bin"
 ```
 
 ## 使用
+1. 修改配置文件(yml)中的 `init_driver` 动作的参数, 如平台、项目路径、开发者工具cli路径等
+
+2. 使用
 ```
 # 1 执行单个文件
 MiniumBoot 步骤配置文件.yml
@@ -86,9 +89,9 @@ MiniumBoot 步骤配置目录/step-*.yml
 - init_driver:
     debug_mode: debug
     enable_app_log: true
-    # F:\微信web开发者工具\cli.bat auto --project "F:\project\jym_wechat" --auto-port 9420
+    # windows cli: F:\微信web开发者工具\cli.bat auto --project "F:\project\jym_wechat" --auto-port 9420
     project_path: F:\project\jym_wechat
-    dev_tool_path: F:\微信web开发者工具\cli.bat # windows
+    dev_tool_path: F:\微信web开发者工具\cli.bat 
     app: wx
     close_ide: false
     test_port: 9420
