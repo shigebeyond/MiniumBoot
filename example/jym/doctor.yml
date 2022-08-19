@@ -1,16 +1,20 @@
 - switch_tab: 1
-- sleep: 1
-  page_scroll: +100%
+#- sleep: 1
+#  page_scroll: +100%
 - sleep: 1
   page_scroll: 0
-  click_by:
-    xpath: /page/view/doctor-list[4]//navigator
+  click_by:  # 点击第一个医生
+#    xpath: /page/view/doctor-list[4]//navigator
+    css: page > view > doctor-list:nth-child(1) > navigator
 - sleep: 1
-  click_by:
-    xpath: /page/view[5]/view
+  click_by: # 我要预约
+#    xpath: /page/view[5]/view
+    css: .btn
 - sleep: 1
-  input_by_xpath:
-    '/page/view[2]/view[3]/view[2]/input': 麦麦
+#  input_by_xpath:
+#    '/page/view[2]/view[3]/view[2]/input': 麦麦
+  input_by_css:
+    'page > view:nth-child(2) > view:nth-child(3) > view.text2 > input': 麦麦
 - sleep: 1
   click_by:  #选择时间
     id: date_show
@@ -21,15 +25,20 @@
 - sleep: 1
   click_by:  #选择分
     id: time_show
+- sleep: 2
 - click_by:  # 确认选择
     #css: '.van-picker__confirm:last-child' # bug: 定位不了
-    xpath: "(//view[@class='van-picker__confirm picker-index--van-picker__confirm'])[2]"
+#    xpath: "(//view[@class='van-picker__confirm picker-index--van-picker__confirm'])[2]"
+    css: '#date_time .van-picker__confirm'
 - sleep: 1
-  input_by_xpath:
-    '/page/view[4]/textarea': 测试用例
+#  input_by_xpath:
+#    '/page/view[4]/textarea': 测试用例
+  input_by_css:  #病例描述
+    'page > view:nth-child(4) > textarea': 测试用例
 - sleep: 1
-  click_by:  # 确认选择
-    xpath:  /page/view[6]/view
+  click_by:  # 我要预约按钮
+#    xpath:  /page/view[6]/view
+    css:  page > view.btn-box > view
 - sleep: 1
   handle_modal: 允许
 - sleep: 5

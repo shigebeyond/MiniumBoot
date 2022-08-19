@@ -21,18 +21,23 @@ from at.core.adbwrap import AdbWrap
 from minium.native.wx_native.androidnative import WXAndroidNative
 from MiniumBoot.driver import MiniTestDriver
 
+
 # 扩展BaseElement方法
 def get_value_or_text(self):
     r = self.value
     if r != None and r != '':
         return r
     return self.inner_text
+
+
 minium.BaseElement.get_value_or_text = get_value_or_text
+
 
 # 跳出循环的异常
 class BreakException(Exception):
     def __init__(self, condition):
-        self.condition = condition # 跳转条件
+        self.condition = condition  # 跳转条件
+
 
 # Minium基于yaml的启动器
 class Boot(object):
@@ -150,6 +155,7 @@ class Boot(object):
     执行入口
     :param step_files 步骤配置文件或目录的列表
     '''
+
     def run(self, step_files):
         for path in step_files:
             # 1 模式文件
@@ -175,12 +181,12 @@ class Boot(object):
     # 执行单个步骤目录: 遍历执行子文件
     # :param path 目录
     # :param pattern 文件名模式
-    def run_1dir(self, dir, pattern ='*.yml'):
+    def run_1dir(self, dir, pattern='*.yml'):
         # 遍历目录: https://blog.csdn.net/allway2/article/details/124176562
         files = os.listdir(dir)
-        files.sort() # 按文件名排序
+        files.sort()  # 按文件名排序
         for file in files:
-            if fnmatch.fnmatch(file, pattern): # 匹配文件名模式
+            if fnmatch.fnmatch(file, pattern):  # 匹配文件名模式
                 file = os.path.join(dir, file)
                 if os.path.isfile(file):
                     self.run_1file(file)
@@ -188,21 +194,21 @@ class Boot(object):
     # 执行单个步骤文件
     # :param step_file 步骤配置文件路径
     # :param include 是否inlude动作触发
-    def run_1file(self, step_file, include = False):
+    def run_1file(self, step_file, include=False):
         # 获得步骤文件的绝对路径
-        if include: # 补上绝对路径
+        if include:  # 补上绝对路径
             if not os.path.isabs(step_file):
                 step_file = self.step_dir + os.sep + step_file
-        else: # 记录目录
+        else:  # 记录目录
             step_file = os.path.abspath(step_file)
             self.step_dir = os.path.dirname(step_file)
 
         log.debug(f"加载并执行步骤文件: {step_file}")
         # 获得步骤
         steps = read_yaml(step_file)
-        if self.step_file == None and self.driver == None: # 首次执行: 初始化driver + 再运行单元测试
+        if self.step_file == None and self.driver == None:  # 首次执行: 初始化driver + 再运行单元测试
             self.init_and_run_test(steps)
-        else: # 执行多个步骤
+        else:  # 执行多个步骤
             self.step_file = step_file
             self.run_steps(steps)
 
@@ -216,8 +222,10 @@ class Boot(object):
 
         # 修改 MiniTestDriver.test_boot
         boot = self
+
         def test_boot(driver):
             boot.run_steps(steps)
+
         MiniTestDriver.test_boot = test_boot
 
         # 运行测试用例 tests 用例对象, 为 TestSuits: MiniTestDriver.test_boot
@@ -226,8 +234,7 @@ class Boot(object):
 
         # 输出结果
         result.print_shot_msg()
-        result.dumps(AssertBase.CONFIG.outputs) # 用例运行的结果存放目录
-
+        result.dumps(AssertBase.CONFIG.outputs)  # 用例运行的结果存放目录
 
     # 执行多个步骤
     def run_steps(self, steps):
@@ -241,6 +248,7 @@ class Boot(object):
     :param action 动作名
     :param param 参数
     '''
+
     def run_action(self, action, param):
         if 'for(' in action:
             n = int(action[4:-1])
@@ -351,17 +359,17 @@ class Boot(object):
     # for循环
     # :param steps 每个迭代中要执行的步骤
     # :param n 循环次数
-    def do_for(self, steps, n = None):
+    def do_for(self, steps, n=None):
         label = f"for({n})"
         if n == None:
-            n = sys.maxsize # 最大int，等于无限循环次数
+            n = sys.maxsize  # 最大int，等于无限循环次数
             label = f"for(∞)"
         log.debug(f"-- 开始循环: {label} -- ")
         try:
             for i in range(n):
                 # i+1表示迭代次数比较容易理解
-                log.debug(f"第{i+1}次迭代")
-                set_var('for_i', i+1)
+                log.debug(f"第{i + 1}次迭代")
+                set_var('for_i', i + 1)
                 self.run_steps(steps)
         except BreakException as e:  # 跳出循环
             log.debug(f"-- 跳出循环: {label}, 跳出条件: {e.condition} -- ")
@@ -454,7 +462,7 @@ class Boot(object):
             try:
                 ele = self.find_by(type, name)
             except Exception as ex:  # 找不到元素
-                log.error(f"找不到输入元素{name}", exc_info = ex)
+                log.error(f"找不到输入元素{name}", exc_info=ex)
                 continue
 
             # 输入
@@ -465,9 +473,9 @@ class Boot(object):
             elif ele._tag_name == 'picker':
                 ele.click()  # 阻止picker弹起
                 ele.pick(value)  # 用trigger模拟pick完成的动作
-            else:#elif ele._tag_name == 'input':
+            else:  # elif ele._tag_name == 'input':
                 # ele.trigger("input", {"value": value})  # 直接触发事件，但是不会影响UI变化
-                ele.input(str(value)) # UI有变化
+                ele.input(str(value))  # UI有变化
 
     # 隐藏键盘
     def hide_keyboard(self, _):
@@ -483,7 +491,7 @@ class Boot(object):
         for type in types:
             if type in config:
                 path = config[type]
-                if type == 'xpath': # xpath支持变量
+                if type == 'xpath':  # xpath支持变量
                     path = replace_var(path)
                 return self.find_by(type, path)
         raise Exception(f"没有查找类型: {config}")
@@ -655,7 +663,7 @@ class Boot(object):
 
     # 点击弹窗的按钮
     # :param btn_text 按钮文本或bool
-    def handle_modal(self, btn_text = "确定"):
+    def handle_modal(self, btn_text="确定"):
         if isinstance(btn_text, bool):
             if btn_text:
                 btn_text = '确定'
@@ -707,7 +715,7 @@ class Boot(object):
         ret = ret.get("result", {}).get("result")
 
     # 调用微信函数
-    def call_wx_method(self, method, args = None):
+    def call_wx_method(self, method, args=None):
         if args == None and isinstance(method, list):
             args = method[1:]
             method = method[0]
@@ -817,7 +825,7 @@ class Boot(object):
 
     # get请求
     # :param config {url, is_ajax, data, validate_by_jsonpath, validate_by_css, validate_by_xpath, extract_by_jsonpath, extract_by_css, extract_by_xpath, extract_by_eval}
-    def get(self, config = {}):
+    def get(self, config={}):
         url = self._get_url(config)
         data = replace_var(config['data'], False)
         headers = {}
@@ -832,7 +840,7 @@ class Boot(object):
 
     # post请求
     # :param config {url, is_ajax, data, validate_by_jsonpath, validate_by_css, validate_by_xpath, extract_by_jsonpath, extract_by_css, extract_by_xpath, extract_by_eval}
-    def post(self, config = {}):
+    def post(self, config={}):
         url = self._get_url(config)
         data = replace_var(config['data'], False)
         headers = {}
@@ -846,7 +854,7 @@ class Boot(object):
 
     # 上传文件
     # :param config {url, files, validate_by_jsonpath, validate_by_css, validate_by_xpath, extract_by_jsonpath, extract_by_css, extract_by_xpath, extract_by_eval}
-    def upload(self, config = {}):
+    def upload(self, config={}):
         url = self._get_url(config)
         # 文件
         files = {}
@@ -890,7 +898,7 @@ class Boot(object):
         if os.path.exists(save_file):
             for i in range(100000000000000):
                 if '.' in save_file:
-                    path, ext = save_file.rsplit(".", 1) # 从后面分割，分割为路径+扩展名
+                    path, ext = save_file.rsplit(".", 1)  # 从后面分割，分割为路径+扩展名
                     newname = f"{path}-{i}.{ext}"
                 else:
                     newname = f"{save_file}-{i}"
@@ -975,8 +983,8 @@ class Boot(object):
     # 屏幕横扫(传坐标)
     # :param config {from, to, duration}
     def swipe(self, config):
-        x1, y1 = config['from'].split(",", 1) # 起点位置
-        x2, y2 = config['to'].split(",", 1) # 终点位置
+        x1, y1 = config['from'].split(",", 1)  # 起点位置
+        x2, y2 = config['to'].split(",", 1)  # 终点位置
         duration = 0
         if 'duration' in config:
             duration = float(config['duration'])
@@ -992,11 +1000,11 @@ class Boot(object):
         ele.touch_start(touches=[touch1], changed_touches=[touch1])
 
         # 两个手指移动到结尾
-        time.sleep(duration/2)
+        time.sleep(duration / 2)
         touch2 = self.build_touch(x2, y2, ele)
         ele.touch_move(touches=[touch2], changed_touches=[touch2])
 
-        time.sleep(duration/2)
+        time.sleep(duration / 2)
         ele.touch_end(changed_touches=[touch2])
 
     # 上滑(传比例)
@@ -1021,18 +1029,18 @@ class Boot(object):
 
     # 左滑(传y坐标)
     # :param y y坐标，固定不变，默认为中间
-    def swipe_left(self, y = None):
+    def swipe_left(self, y=None):
         self.swipe_horizontal('0.75,0.25', y)
 
     # 右滑(传y坐标)
     # :param y y坐标，固定不变，默认为中间
-    def swipe_right(self, y = None):
+    def swipe_right(self, y=None):
         self.swipe_horizontal('0.25,0.75', y)
 
     # 垂直方向(上下)滑动
     # :param y_range_ratios y轴起点/终点位置在屏幕的比例，如 0.2,0.7，即y轴上从屏幕0.2比例处滑到0.7比例处
     # :param xm x坐标，固定不变，默认为中间
-    def swipe_vertical(self, y_range_ratios, xm = None):
+    def swipe_vertical(self, y_range_ratios, xm=None):
         # 获取屏幕的宽高
         size = self.page.inner_size
         w = size["width"]
@@ -1041,7 +1049,7 @@ class Boot(object):
         if xm == None:
             xm = int(w * 0.5)
         # y:按比例计算坐标
-        y1_ratio, y2_ratio = y_range_ratios.split(",", 1) # y轴起点/终点位置在屏幕的比例
+        y1_ratio, y2_ratio = y_range_ratios.split(",", 1)  # y轴起点/终点位置在屏幕的比例
         y1 = int(h * float(y1_ratio))
         y2 = int(h * float(y2_ratio))
         duration = 0.1
@@ -1050,7 +1058,7 @@ class Boot(object):
     # 水平方向(左右)滑动
     # :param x_range_ratios x轴起点/终点位置在屏幕的比例，如 0.2,0.7，即x轴上从屏幕0.2比例处滑到0.7比例处
     # :param ym y坐标，固定不变，默认为中间
-    def swipe_horizontal(self, x_range_ratios, ym = None):
+    def swipe_horizontal(self, x_range_ratios, ym=None):
         # 获取屏幕的宽高
         size = self.page.inner_size
         w = size["width"]
@@ -1142,7 +1150,7 @@ class Boot(object):
 
     # 获得缩放时2个手指的y轴起点/终点位置在屏幕的比例，分别是: 两个手指的起点y比例, 两个手指的终点y比例
     def get_zoom_y_range_ratios(self, is_up):
-        if is_up: # 放大：从中间到两边
+        if is_up:  # 放大：从中间到两边
             return 0.5, 0.5, 9.9, 0.1
 
         # 缩小: 从两边到中间
@@ -1175,11 +1183,12 @@ def main():
             # report_to_sauce(boot.driver.session_id)
             # take_screenshot_and_logcat(boot.driver, device_logger, calling_request)
         # log.error(f"异常环境:当前步骤文件为 {step_file}, 当前page为 {page}, 当前层级为 {src}", exc_info = ex)
-        log.error(f"异常环境:当前步骤文件为 {boot.step_file}, 当前page为 {page}", exc_info = ex)
+        log.error(f"异常环境:当前步骤文件为 {boot.step_file}, 当前page为 {page}", exc_info=ex)
         raise ex
     finally:
         boot
-        #boot.close_driver()
+        # boot.close_driver()
+
 
 if __name__ == '__main__':
     main()

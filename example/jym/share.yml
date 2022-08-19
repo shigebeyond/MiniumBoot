@@ -3,7 +3,8 @@
   switch_tab: 2
 - sleep: 1
   click_by: # 转介绍人
-    xpath: /page/view/view[2]/view[2]/view[1]/navigator
+#    xpath: /page/view/view[2]/view[2]/view[1]/navigator
+    css: page > view > view:nth-child(3) > view.flex.achievement > view:nth-child(1) > navigator
 - sleep: 1
   back:
   page_scroll: 400

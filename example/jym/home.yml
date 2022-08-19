@@ -7,14 +7,17 @@
   page_scroll: 0
 - sleep: 1
 - click_by: # 单个商品
-    xpath: /page/view[3]/view[1]/image
+    #xpath: /page/view[3]/view[1]/image
+    css: page > view.recommend-lists > view:nth-child(1) > image
 - sleep: 1
   page_scroll: 100%
   click_by: # 推广按钮
-    xpath: /page/view[4]/share//view/van-button//button
+#    xpath: /page/view[4]/share//view/van-button//button
+    css: button
 - sleep: 1
   #click_by: # 取消推广
   #  xpath: /page/view[4]/share//view/van-share-sheet//van-popup/button
+#   css: van-popup > button
   click_by:  #取消推广
     css: button.van-share-sheet__cancel
 - sleep: 1

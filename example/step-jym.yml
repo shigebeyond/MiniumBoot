@@ -3,8 +3,9 @@
     debug_mode: debug
     enable_app_log: true
     # F:\微信web开发者工具\cli.bat auto --project "F:\wc_work_project\jym_wechat" --auto-port 9420
-    project_path: F:\wc_work_project\jym_wechat
-    dev_tool_path: F:\微信web开发者工具\cli.bat # windows
+    project_path: /home/yyy/WeChatProjects/jym_wechat
+    dev_tool_path: /opt/apps/io.github.msojocs.wechat-devtools-no-wine/files/bin/bin/wechat-devtools-cli # windows
+    #dev_tool_path: /home/yyy/apps/WeChat_Dev_Tools_v1.06.2206090-2_x86_64_wine/WeChat_Dev_Tools_v1.06.2206090-2_x86_64_wine/bin/wechat-devtools-cli # windows
     #dev_tool_path: /Applications/wechatwebdevtools.app/Contents/MacOS/cli # mac
     app: wx
     close_ide: false
@@ -12,8 +13,8 @@
     assert_capture: true
     use_push: true
     auto_relaunch: true
-    request_timeout: 60
-    remote_connect_timeout: 300
+    request_timeout: 50
+    remote_connect_timeout: 100
 #    account_info:
 #      wx_nick_name: locker
 #      open_id: o6zAJs_pwr**********aROZDjiw

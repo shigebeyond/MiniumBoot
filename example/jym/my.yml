@@ -2,18 +2,23 @@
 - switch_tab: 3
   sleep: 1
   click_by: # 修改密码
-    xpath: /page/view[3]/button[2]
+#    xpath: /page/view[3]/button[2]
+    css: page > view.item_list.item_list2 > button:nth-child(2)
 - sleep: 1
-  input_by_xpath:
-    '/page/view[1]/view[2]/view[2]/input': 123456
+#  input_by_xpath:
+#    '/page/view[1]/view[2]/view[2]/input': 123456
+  input_by_css:
+    'page > view.bg_view > view:nth-child(2) > view.text2 > input': 123456
 - sleep: 1
   back:
 - sleep: 1
   click_by: # 银行卡管理
-    xpath: /page/view[3]/button[3]
+#    xpath: /page/view[3]/button[3]
+    css: page > view.item_list.item_list2 > button:nth-child(3)
 - sleep: 1
-  click_by:  # 银行卡管理
-    xpath: /page/view/button
+  click_by:  # 银行卡管理--添加银行卡
+#    xpath: /page/view/button
+    css: page > view > button
 - sleep: 1
   back:
 - sleep: 1
@@ -23,8 +28,9 @@
     #xpath: /page/view[1]/view[3]
     css: view.ui_change
 - sleep: 1
-  click_by:
-    xpath: /page/view[2]/view[3]/view[1]
+  click_by:  # 全部订单
+#    xpath: /page/view[2]/view[3]/view[1]
+    css: page > view.my_order > view.ui_menu > view:nth-child(1)
 - sleep: 1
   back:
 
