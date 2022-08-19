@@ -1,4 +1,5 @@
 # 首页tab
+- switch_tab: 0
 - sleep: 1
   page_scroll: 100%
 - sleep: 1
@@ -8,7 +9,7 @@
 - sleep: 1
 - click_by: # 单个商品
     #xpath: /page/view[3]/view[1]/image
-    css: page > view.recommend-lists > view:nth-child(1) > image
+    css: 'page > view.recommend-lists > view:nth-child(1) > image'
 - sleep: 1
   page_scroll: 100%
   click_by: # 推广按钮

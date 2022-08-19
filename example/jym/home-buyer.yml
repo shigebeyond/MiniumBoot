@@ -1,0 +1,41 @@
+# 首页tab
+- switch_tab: 0
+- sleep: 1
+  page_scroll: 100%
+- sleep: 1
+  page_scroll: 0
+- sleep: 1
+- click_by: # 单个商品
+    #xpath: /page/view[3]/view[1]/image
+    css: 'page > view.recommend-lists > view:nth-child(1) > image'
+- sleep: 1
+  page_scroll: 100%
+  click_by: # 购买按钮
+    css: view.sure
+- sleep: 1
+  input_by_id: # 就诊人姓名
+    'visit_name': shige
+- sleep: 1
+  click_by:  #选择时间
+    id: date_show
+    #css: '#date_show'
+- sleep: 1
+  click_by:  # 确认选择
+    css: '.van-picker__confirm'
+- sleep: 1
+  click_by:  #选择分
+    id: time_show
+- sleep: 2
+- click_by:  # 确认选择
+    #css: '.van-picker__confirm:last-child' # bug: 定位不了
+#    xpath: "(//view[@class='van-picker__confirm picker-index--van-picker__confirm'])[2]"
+    css: '#date_time .van-picker__confirm'
+- sleep: 1
+  page_scroll: 50% # 下拉
+  click_by: # 选择医师
+    css: page > view:nth-child(4) > view:nth-child(2) > view.sel-icon > image
+- sleep: 1
+  back:
+- sleep: 1
+  back:
+

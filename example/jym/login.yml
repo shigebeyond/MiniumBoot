@@ -1,0 +1,9 @@
+# 我的tab
+- switch_tab: 3
+  sleep: 1
+  once:
+    - moveon_if_exist_by:
+        css: van-button#miniprogram_npm/@vant/weapp/button/index
+    - click_by:
+        css: van-button#miniprogram_npm/@vant/weapp/button/index
+      sleep: 1

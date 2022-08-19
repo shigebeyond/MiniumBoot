@@ -1,0 +1,10 @@
+# 切换为普通会员
+# 我的tab
+- switch_tab: 3
+  sleep: 1
+  once:
+    - moveon_if_exist_by: # 如果市场人员，则继续
+        css: view.ui_change.ui_change2
+    - click_by: # 切换身份
+        css: view.ui_change
+      sleep: 1

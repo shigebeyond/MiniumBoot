@@ -2,11 +2,14 @@
 - init_driver:
     debug_mode: debug
     enable_app_log: true
-    # F:\微信web开发者工具\cli.bat auto --project "F:\wc_work_project\jym_wechat" --auto-port 9420
-    project_path: /home/yyy/WeChatProjects/jym_wechat
-    dev_tool_path: /opt/apps/io.github.msojocs.wechat-devtools-no-wine/files/bin/bin/wechat-devtools-cli # windows
-    #dev_tool_path: /home/yyy/apps/WeChat_Dev_Tools_v1.06.2206090-2_x86_64_wine/WeChat_Dev_Tools_v1.06.2206090-2_x86_64_wine/bin/wechat-devtools-cli # windows
-    #dev_tool_path: /Applications/wechatwebdevtools.app/Contents/MacOS/cli # mac
+    # windows cli: F:\微信web开发者工具\cli.bat auto --project "F:\wc_work_project\jym_wechat" --auto-port 9420
+    #project_path: F:\wc_work_project\jym_wechat
+    #dev_tool_path: F:\微信web开发者工具\cli.bat
+    # linux
+    project_path: /home/shi/code/wechat/jym_wechat
+    dev_tool_path: /opt/apps/io.github.msojocs.wechat-devtools-no-wine/files/bin/bin/wechat-devtools-cli
+    # mac
+    #dev_tool_path: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
     app: wx
     close_ide: false
     test_port: 9420
@@ -35,12 +38,23 @@
   print_system_info:
 #  print_all_pages:
 #  print_current_page:
-# 首页tab
-- include: jym/home.yml
+# 登录
+#- include: jym/login.yml
+# ------------ 切换市场人员 ------------
+- include: jym/as-seller.yml
+# 首页tab -- 市场人员
+- include: jym/home-seller.yml
 ## 我的推广tab
 - include: jym/share.yml
-## 我的tab: 原来的身份是会员端，my.yml会切换为市场人员端
-- include: jym/my.yml
+## 我的tab -- 市场人员
+- include: jym/my-seller.yml
+
+# ------------ 切换普通会员 ------------
+- include: jym/as-buyer.yml
+# 首页tab -- 普通会员
+- include: jym/home-buyer.yml
+## 我的tab -- 普通会员
+- include: jym/my-buyer.yml
 # 医师风采
 - include: jym/doctor.yml
   sleep: 4

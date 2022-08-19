@@ -1,0 +1,10 @@
+# 切换为市场人员
+# 我的tab
+- switch_tab: 3
+  sleep: 1
+  once:
+    - break_if_exist_by: # 如果是市场人员，则跳出
+        css: view.ui_change.ui_change2
+    - click_by: # 切换身份
+        css: view.ui_change
+      sleep: 1
