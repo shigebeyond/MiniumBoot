@@ -74,6 +74,12 @@ MiniumBoot 步骤配置目录/step-*.yml
 
 [demo视频](https://www.zhihu.com/zvideo/1542517561199009793)
 
+## 查找元素的方法
+参考[Page.get_element()](https://minitest.weixin.qq.com/#/minium/Python/api/Page?id=get_element)
+1. id: 根据 name 属性值来查找
+2. css: 根据 css selector 来查找 
+3. xpath: 根据 xpath 来查找
+
 ## 配置详解
 支持通过yaml来配置执行的步骤;
 
@@ -446,30 +452,37 @@ once:
 ```
 
 45. break_if: 满足条件则跳出循环; 
-只能定义在for循环的子步骤中
+只能定义在for/once循环的子步骤中
 ```yaml
 break_if: for_i>2 # 条件表达式，python语法
 ```
 
 46. moveon_if: 满足条件则往下走，否则跳出循环; 
-只能定义在for循环的子步骤中
+只能定义在for/once循环的子步骤中
 ```yaml
 moveon_if: for_i<=2 # 条件表达式，python语法
 ```
 
 47. moveon_if_exist_by: 如果检查元素存在 则往下走，否则跳出循环; 
-只能定义在for循环的子步骤中
+只能定义在for/once循环的子步骤中
 ```yaml
 moveon_if_exist_by:
-    id: com.shikee.shikeeapp:id/button1
+    id: button1
 ```
 
-48. include: 包含其他步骤文件，如记录公共的步骤，或记录配置数据(如用户名密码); 
+48. break_if_exist_by: 如果检查元素存在 则跳出循环，否则往下走; 
+只能定义在for/once循环的子步骤中
+```yaml
+break_if_exist_by:
+    id: button1
+```
+
+49. include: 包含其他步骤文件，如记录公共的步骤，或记录配置数据(如用户名密码); 
 ```yaml
 include: part-common.yml
 ```
 
-49. set_vars: 设置变量; 
+50. set_vars: 设置变量; 
 ```yaml
 set_vars:
   name: shi
@@ -477,17 +490,17 @@ set_vars:
   birthday: 5-27
 ```
 
-50. print_vars: 打印所有变量; 
+51. print_vars: 打印所有变量; 
 ```yaml
 print_vars:
 ```
 
-51. base_url: 设置基础url
+52. base_url: 设置基础url
 ```yaml
 base_url: https://www.taobao.com/
 ```
 
-52. get: 发get请求, 但无跳转; 
+53. get: 发get请求, 但无跳转; 
 ```yaml
 get:
     url: $dyn_data_url # url,支持写变量
@@ -495,7 +508,7 @@ get:
       dyn_data: "json.loads(response.text[16:-1])" # 变量response是响应对象
 ```
 
-53. post: 发post请求, 但无跳转; 
+54. post: 发post请求, 但无跳转; 
 ```yaml
 post:
     url: http://admin.jym1.com/store/add_store # url,支持写变量
@@ -506,7 +519,7 @@ post:
       store_logo_url: '$img'
 ```
 
-54. upload: 上传文件; 
+55. upload: 上传文件; 
 ```yaml
 upload: # 上传文件/图片
     url: http://admin.jym1.com/upload/common_upload_img/store_img
@@ -517,7 +530,7 @@ upload: # 上传文件/图片
       img: $.data.url
 ```
 
-55. download: 下载文件; 
+56. download: 下载文件; 
 变量`download_file`记录最新下载的单个文件
 ```yaml
 download:
@@ -526,7 +539,7 @@ download:
     save_file: test.jpg # 保存的文件名，默认为url中最后一级的文件名
 ```
 
-56. exec: 执行命令, 可用于执行 HttpBoot/SeleniumBoot/AppiumBoot/MiniumBoot 等命令，以便打通多端的用例流程
+57. exec: 执行命令, 可用于执行 HttpBoot/SeleniumBoot/AppiumBoot/MiniumBoot 等命令，以便打通多端的用例流程
 ```yaml
 exec: ls
 exec: SeleniumBoot test.yml
@@ -551,7 +564,7 @@ exec: SeleniumBoot test.yml
 从当前页面中校验 id 对应的元素的值
 ```yaml
 validate_by_id:
-  "io.material.catalog:id/cat_demo_text": # 元素的id
+  "cat_demo_text": # 元素的id
     '=': 'Hello world' # 校验符号或函数: 校验的值
 ```
 
@@ -595,6 +608,8 @@ validate_by_jsonpath:
 7. `startswith`: 以子串开头
 8. `endswith`: 以子串结尾
 9. `regex_match`: 正则匹配
+10. `exists`: 元素存在
+11. `not_exists`: 元素不存在
 
 ## 提取器
 主要是为了从页面或响应中提取变量, 根据不同场景有2种写法
@@ -617,7 +632,7 @@ validate_by_jsonpath:
 ```yaml
 extract_by_id:
   # 变量名: 元素id
-  goods_id: "io.material.catalog:id/cat_demo_text"
+  goods_id: "cat_demo_text"
 ```
 
 2. extract_by_css:
