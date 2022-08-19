@@ -8,3 +8,7 @@
     - click_by: # 切换身份
         css: view.ui_change
       sleep: 1
+  # 校验身份
+  validate_by_css:
+    'view.ui_change>text':
+      '=': 市场人员
