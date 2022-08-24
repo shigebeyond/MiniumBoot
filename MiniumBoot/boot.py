@@ -568,14 +568,18 @@ class Boot(object):
         y = self.calculate_new_scroll_pos(y, page.inner_size["height"], page.scroll_y)
         page.scroll_to(y)
 
-    # 滚动元素(传元素+坐标)
+    # 滚动元素(传元素+坐标) -- 基础库v2.23.4版本后支持
     # :param config {id, css, path, pos}
     def scroll_by(self, config):
         ele = self.find_by_any(config)
         x, y = config['pos'].split(",", 1)
         # 计算新的滚动位置
-        x = self.calculate_new_scroll_pos(x, ele.size['width'], ele.scroll_left)
-        y = self.calculate_new_scroll_pos(y, ele.size['height'], ele.scroll_top)
+        left = top = 0
+        if hasattr(ele, 'scroll_left'):
+            left = ele.scroll_left
+            top = ele.scroll_top
+        x = self.calculate_new_scroll_pos(x, ele.size['width'], left)
+        y = self.calculate_new_scroll_pos(y, ele.size['height'], top)
         ele.scroll_to(x, y)
 
     # 向上滚动元素
