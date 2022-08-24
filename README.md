@@ -636,11 +636,12 @@ extract_by_id:
 ```
 
 2. extract_by_css:
-从html响应中解析 css selector 模式指定的元素的值
+从当前页面或html响应中解析 css selector 模式指定的元素的值
 ```yaml
 extract_by_css:
   # 变量名: css selector 模式
   goods_id: #goods_id
+  url: image::attr(src) # 获得<image>的src属性
 ```
 
 3. extract_by_xpath:
@@ -649,6 +650,7 @@ extract_by_css:
 extract_by_xpath:
   # 变量名: xpath路径
   goods_id: //view[@id='goods_id']
+  url: //image/@src # 获得<image>的src属性
 ```
 
 4. extract_by_jsonpath:
