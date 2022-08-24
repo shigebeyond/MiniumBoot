@@ -1,6 +1,8 @@
 # 首页tab
 - switch_tab: 0
 - sleep: 1
+  extract_by_css:
+    url: 'page > view.recommend-lists > view:nth-child(1) > image::attr(src)' # 获得<image>的src属性
   page_scroll: 100%
 - sleep: 1
   page_scroll: +100%
