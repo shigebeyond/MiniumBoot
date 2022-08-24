@@ -195,7 +195,7 @@ page_scroll: +200 # y位移
 page_scroll: -20% # 位移在屏幕中比例
 ```
 
-10. scroll_by: 滚动某元素(传元素+坐标)
+10. scroll_by: 滚动某元素(传元素+坐标), 注意在基础库v2.23.4版本后支持
 ```yaml
 scroll_by:
     # 元素查找方式(id/css/xpath多选一) : 查找的值
@@ -207,7 +207,7 @@ scroll_by:
     pos: +30%,50% # 元素高度的比例
 ```
 
-11. scroll_up_by: 向上滚动元素
+11. scroll_up_by: 向上滚动元素, 注意在基础库v2.23.4版本后支持
 ```yaml
 scroll_up_by:
     # 元素查找方式(id/css/xpath多选一) : 查找的值
@@ -215,7 +215,7 @@ scroll_up_by:
     xpath: //view[@id='line']
 ```
     
-12. scroll_down_by: 向下滚动元素
+12. scroll_down_by: 向下滚动元素, 注意在基础库v2.23.4版本后支持
 ```yaml
 scroll_down_by:
     # 元素查找方式(id/css/xpath多选一) : 查找的值
@@ -223,7 +223,7 @@ scroll_down_by:
     xpath: //view[@id='line']
 ```
     
-13. scroll_left_by: 向左滚动元素
+13. scroll_left_by: 向左滚动元素, 注意在基础库v2.23.4版本后支持
 ```yaml
 scroll_left_by:
     # 元素查找方式(id/css/xpath多选一) : 查找的值
@@ -231,7 +231,7 @@ scroll_left_by:
     xpath: //view[@id='line']
 ```
     
-14. scroll_right_by: 向右滚动元素
+14. scroll_right_by: 向右滚动元素, 注意在基础库v2.23.4版本后支持
 ```yaml
 scroll_right_by:
     # 元素查找方式(id/css/xpath多选一) : 查找的值
