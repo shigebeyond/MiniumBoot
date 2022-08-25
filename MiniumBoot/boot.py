@@ -196,6 +196,18 @@ class Boot(object):
     # :param step_file 步骤配置文件路径
     # :param include 是否inlude动作触发
     def run_1file(self, step_file, include=False):
+        # 加载步骤文件
+        step_file, steps = self.load_1file(step_file, include)
+        log.debug(f"加载并执行步骤文件: {step_file}")
+        # 执行步骤
+        if self.step_file == None and self.driver == None:  # 首次执行: 初始化driver + 再运行单元测试
+            self.init_and_run_test(steps)
+        else:  # 执行多个步骤
+            self.step_file = step_file
+            self.run_steps(steps)
+
+    # 加载单个步骤文件
+    def load_1file(self, step_file, include):
         # 获得步骤文件的绝对路径
         if include:  # 补上绝对路径
             if not os.path.isabs(step_file):
@@ -203,22 +215,32 @@ class Boot(object):
         else:  # 记录目录
             step_file = os.path.abspath(step_file)
             self.step_dir = os.path.dirname(step_file)
-
-        log.debug(f"加载并执行步骤文件: {step_file}")
         # 获得步骤
         steps = read_yaml(step_file)
-        if self.step_file == None and self.driver == None:  # 首次执行: 初始化driver + 再运行单元测试
-            self.init_and_run_test(steps)
-        else:  # 执行多个步骤
-            self.step_file = step_file
-            self.run_steps(steps)
+        return step_file, steps
+
+    # 获得 init_driver 动作参数
+    def get_init_driver_step(self, steps):
+        err = '未找到第一个动作: init_driver'
+        if len(steps) == 0:
+            raise Exception(err)
+        if 'init_driver' in steps[0]:
+            return steps[0]['init_driver']
+
+        # 递归获得include中的 init_driver 动作
+        if 'include' in steps[0]:
+            # 加载步骤文件
+            step_file = steps[0]['include']
+            step_file, steps = self.load_1file(step_file, True)
+            # 递归获得 init_driver 动作
+            return self.get_init_driver_step(steps)
+
+        raise Exception(err)
 
     # 首次执行: 先初始化driver, 再运行单元测试
     def init_and_run_test(self, steps):
-        if len(steps) == 0 or 'init_driver' not in steps[0]:
-            raise Exception('未找到第一个动作: init_driver')
         # 1 初始化driver
-        params = steps[0]['init_driver']
+        params = self.get_init_driver_step(steps)
         self.init_driver(params)
 
         # 修改 MiniTestDriver.test_boot
