@@ -73,6 +73,8 @@ class Boot(object):
             'input_by_xpath': self.input_by_xpath,
             'hide_keyboard': self.hide_keyboard,
             'page_scroll': self.page_scroll,
+            'page_scroll_top': self.page_scroll_top,
+            'page_scroll_bottom': self.page_scroll_bottom,
             'scroll_by': self.scroll_by,
             'scroll_up_by': self.scroll_up_by,
             'scroll_down_by': self.scroll_down_by,
@@ -592,6 +594,15 @@ class Boot(object):
         # 计算新的滚动位置
         y = self.calculate_new_scroll_pos(y, page.inner_size["height"], page.scroll_y)
         page.scroll_to(y)
+
+    # 滚动到页面顶部
+    def page_scroll_top(self, y):
+        self.page.scroll_to(0)
+
+    # 滚动到页面底部
+    def page_scroll_bottom(self, y):
+        page = self.page
+        page.scroll_to(page.scroll_height)
 
     # 滚动元素(传元素+坐标) -- 基础库v2.23.4版本后支持
     # :param config {id, css, path, pos}
