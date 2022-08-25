@@ -1,9 +1,29 @@
+# 方案1: 通过切换tab来触发弹出登录页: wrong，原因是tabbar是自定义的，而自定义的tabbar登录检查是绑定tap事件触发，而 switch_tab 是无法触发登录检查
 # 我的tab
-- switch_tab: 3
-  sleep: 1
+#- switch_tab: 3
+#  sleep: 1
+#  once:
+#    - moveon_if_exist_by:
+#        css: van-button#miniprogram_npm/@vant/weapp/button/index
+#    - click_by:
+#        css: van-button#miniprogram_npm/@vant/weapp/button/index
+#      sleep: 1
+
+# 方案2: 读本地存储的登录用户数据(wx.getStorageSync("userInfo"))，然后直接跳到登录页
+- call_wx_method: ['getStorageSync', 'userInfo'] # 读本地存储的登录用户数据
+  print: '登录用户信息: $return_val'
   once:
-    - moveon_if_exist_by:
-        css: van-button#miniprogram_npm/@vant/weapp/button/index
-    - click_by:
-        css: van-button#miniprogram_npm/@vant/weapp/button/index
-      sleep: 1
+      - moveon_if: return_val=='' # 如果登录用户为空, 则继续走(登录)
+        goto: /pages/login/index
+        sleep: 1
+      - click_by:
+          css: page > view > view:nth-child(2) > van-button:nth-child(1) > button
+        sleep: 3
+
+# 方案3: 点商品详情页的'立即购买'，会跳到登录页
+#- click_by: # 单个商品
+#    #xpath: /page/view[3]/view[1]/image
+#    css: 'page > view.recommend-lists > view:nth-child(1) > image'
+#  sleep: 1
+#- click_by: # 购买按钮
+#    css: view.sure

@@ -92,6 +92,7 @@ class Boot(object):
             'screenshot': self.screenshot,
             'execute_js': self.execute_js,
             'call_wx_method': self.call_wx_method,
+            'call_page_method': self.call_page_method,
             'goto': self.goto,
             'switch_tab': self.switch_tab,
             'back': self.back,
@@ -330,6 +331,8 @@ class Boot(object):
             }
         }
         '''
+        # 替换配置中的变量
+        config = replace_var(config, False)
         # app.json
         path = config['project_path'] + os.sep + 'miniprogram' + os.sep + 'app.json'
         self.appjson = read_json(path)
@@ -759,6 +762,16 @@ class Boot(object):
         args = []
         ret = self.app.evaluate(js, args, sync=True)
         ret = ret.get("result", {}).get("result")
+        set_var('return_val', ret)
+
+    # 调用页面方法，如getTabBar
+    def call_page_method(self, method, args=None):
+        if args == None and isinstance(method, list):
+            args = method[1:]
+            method = method[0]
+        ret = self.page.call_method(method, args)
+        ret = ret.get("result", {}).get("result")
+        set_var('return_val', ret)
 
     # 调用微信函数
     def call_wx_method(self, method, args=None):
@@ -766,7 +779,8 @@ class Boot(object):
             args = method[1:]
             method = method[0]
         ret = self.app.call_wx_method(method, args)
-        return ret.get("result", {}).get("result")
+        ret = ret.get("result", {}).get("result")
+        set_var('return_val', ret)
 
     # 跳转到指定页面, 但是不能跳到 tabbar 页面
     def goto(self, url):
@@ -841,16 +855,16 @@ class Boot(object):
         self.call_wx_method("sendSms", [{"phoneNumber": phone, "content": content}])
 
     # 打印系统信息
-    def print_system_info(self, _):
+    def print_system_info(self, _ = None):
         info = self.mini.get_system_info()
         log.debug('system_info: ' + json.dumps(info))
 
     # 打印所有页面
-    def print_all_pages(self, _):
+    def print_all_pages(self, _ = None):
         log.debug('all pages: ' + ', '.join(self.app.get_all_pages_path()))
 
     # 打印当前页面
-    def print_current_page(self, _):
+    def print_current_page(self, _ = None):
         # page = self.app.get_current_page()
         page = self.page
         log.debug('current_page: ' + str(page) + ', data: ' + json.dumps(page.data))

@@ -39,7 +39,7 @@
 #  print_all_pages:
 #  print_current_page:
 # 登录
-#- include: jym/login.yml
+- include: jym/login.yml
 # ------------ 切换市场人员 ------------
 - include: jym/as-seller.yml
 # 首页tab -- 市场人员
