@@ -447,6 +447,12 @@ for(3) :
   - swipe_down:
     sleep: 2
 
+# 循环list类型的变量urls
+for(urls) :
+  # 每次迭代要执行的子步骤
+  - swipe_down:
+    sleep: 2    
+
 # 无限循环，直到遇到跳出动作
 # 有变量for_i记录是第几次迭代（从1开始）
 for:
