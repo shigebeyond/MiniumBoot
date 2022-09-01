@@ -16,4 +16,4 @@ class MiniTestDriver(minium.MiniTest):
         if type == 'xpath':
             return self.page.get_element('', xpath = path)
 
-        raise Exception(f"无效查找类型: {type}")
+        raise Exception(f"Invalid find type: {type}")

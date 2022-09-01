@@ -42,12 +42,12 @@ class ResponseWrap(object):
                 data = self.res.json()
                 return jsonpath(data, path)[0]
 
-            raise Exception(f"无http响应, 不支持查找类型: {type}")
+            raise Exception(f"No http response => invalid find type: {type}")
 
         if type == 'id':
             return self.driver.find_element_by('id', path).get_value_or_text()
 
-        raise Exception(f"不支持查找类型: {type}")
+        raise Exception(f"Invalid find type: {type}")
 
     # 获得元素的属性值或文本
     def get_prop_or_text(self, ele, prop):
