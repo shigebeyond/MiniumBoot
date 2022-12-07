@@ -8,7 +8,7 @@ import json
 import fnmatch
 from pathlib import Path
 import requests
-from pyutilb import log, ocr_youdao
+from pyutilb import log, YamlBoot, ocr_youdao
 from pyutilb.util import *
 import base64
 from MiniumBoot.validator import Validator
@@ -36,34 +36,14 @@ class BreakException(Exception):
         self.condition = condition  # 跳转条件
 
 # Minium基于yaml的启动器
-class Boot(object):
+class Boot(YamlBoot):
 
     def __init__(self):
         super().__init__()
-        # 延迟初始化driver
-        self.driver = None
-        # 当前页面的校验器, 依赖于driver
-        self.validator = None
-        # 当前页面的提取器, 依赖于driver
-        self.extractor = None
-        # 加载的 TestSuite
-        self.suite = None
-        # 项目代码中的app.json数据
-        self.appjson = None
-        # 延迟初始化的app包
-        self.package = None
-        # 步骤文件所在的目录
-        self.step_dir = None
-        # 已下载过的url对应的文件，key是url，value是文件
-        self.downloaded_files = {}
-        # 基础url
-        self._base_url = None
         # 动作映射函数
-        self.actions = {
+        actions = {
             'init_driver': self.init_driver,
             'close_driver': self.close_driver,
-            'sleep': self.sleep,
-            'print': self.print,
             'input_by_id': self.input_by_id,
             'input_by_css': self.input_by_css,
             'input_by_xpath': self.input_by_xpath,
@@ -105,16 +85,9 @@ class Boot(object):
             'print_system_info': self.print_system_info,
             'print_all_pages': self.print_all_pages,
             'print_current_page': self.print_current_page,
-            'for': self.do_for,
-            'once': self.once,
-            'break_if': self.break_if,
-            'moveon_if': self.moveon_if,
             'moveon_if_exist_by': self.moveon_if_exist_by,
             'break_if_exist_by': self.break_if_exist_by,
             'break_if_not_exist_by': self.break_if_not_exist_by,
-            'include': self.include,
-            'set_vars': self.set_vars,
-            'print_vars': self.print_vars,
             'base_url': self.base_url,
             'get': self.get,
             'post': self.post,
@@ -129,7 +102,6 @@ class Boot(object):
             'extract_by_xpath': self.extract_by_xpath,
             'extract_by_id': self.extract_by_id,
             'extract_by_eval': self.extract_by_eval,
-            'exec': self.exec,
 
             # 以下步骤是根据官方api封装, 但发现api无用
             'swipe': self.swipe,
@@ -145,78 +117,43 @@ class Boot(object):
             'zoom_in_by': self.zoom_in_by,
             'zoom_out_by': self.zoom_out_by,
         }
-        set_var('boot', self)
-        # 当前文件
-        self.step_file = None
+        self.add_actions(actions)
+
+        # 延迟初始化driver
+        self.driver = None
+        # 当前页面的校验器, 依赖于driver
+        self.validator = None
+        # 当前页面的提取器, 依赖于driver
+        self.extractor = None
+        # 加载的 TestSuite
+        self.suite = None
+        # 项目代码中的app.json数据
+        self.appjson = None
+        # 延迟初始化的app包
+        self.package = None
+        # 已下载过的url对应的文件，key是url，value是文件
+        self.downloaded_files = {}
+        # 基础url
+        self._base_url = None
         # 视频/音频文件
         self.video_ele = None
 
-    '''
-    执行入口
-    :param step_files 步骤配置文件或目录的列表
-    '''
-
-    def run(self, step_files):
-        for path in step_files:
-            # 1 模式文件
-            if '*' in path:
-                dir, pattern = path.rsplit(os.sep, 1)  # 从后面分割，分割为目录+模式
-                if not os.path.exists(dir):
-                    raise Exception(f'Step config directory not exist: {dir}')
-                self.run_1dir(dir, pattern)
-                return
-
-            # 2 不存在
-            if not os.path.exists(path):
-                raise Exception(f'Step config file or directory not exist: {path}')
-
-            # 3 目录: 遍历执行子文件
-            if os.path.isdir(path):
-                self.run_1dir(path)
-                return
-
-            # 4 纯文件
-            self.run_1file(path)
-
-    # 执行单个步骤目录: 遍历执行子文件
-    # :param path 目录
-    # :param pattern 文件名模式
-    def run_1dir(self, dir, pattern='*.yml'):
-        # 遍历目录: https://blog.csdn.net/allway2/article/details/124176562
-        files = os.listdir(dir)
-        files.sort()  # 按文件名排序
-        for file in files:
-            if fnmatch.fnmatch(file, pattern):  # 匹配文件名模式
-                file = os.path.join(dir, file)
-                if os.path.isfile(file):
-                    self.run_1file(file)
 
     # 执行单个步骤文件
     # :param step_file 步骤配置文件路径
     # :param include 是否inlude动作触发
     def run_1file(self, step_file, include=False):
-        # 加载步骤文件
-        step_file, steps = self.load_1file(step_file, include)
-        log.debug(f"Load and run step file: {step_file}")
+        # 首次执行
+        is_first = self.step_file == None and self.driver == None
+        # 加载步骤文件：会更新 self.step_dir 与 self.step_file
+        steps = self.load_1file(step_file, include)
+        log.debug(f"Load and run step file: {self.step_file}")
         # 执行步骤
-        if self.step_file == None and self.driver == None:  # 首次执行: 初始化driver + 再运行单元测试
+        if is_first:  # 首次执行: 初始化driver + 再运行单元测试
             self.init_and_run_test(steps)
         else:  # 执行多个步骤
             self.step_file = step_file
             self.run_steps(steps)
-
-    # 加载单个步骤文件
-    def load_1file(self, step_file, include):
-        # 获得步骤文件的绝对路径
-        if include:  # 补上绝对路径
-            if not os.path.isabs(step_file):
-                step_file = self.step_dir + os.sep + step_file
-        else:  # 记录目录
-            step_file = os.path.abspath(step_file)
-            self.step_dir = os.path.dirname(step_file)
-        # 获得步骤
-        steps = read_yaml(step_file)
-        return step_file, steps
 
     # 获得 init_driver 动作参数
     def get_init_driver_step(self, steps):
@@ -257,33 +194,6 @@ class Boot(object):
         # 输出结果
         result.print_shot_msg()
         result.dumps(AssertBase.CONFIG.outputs)  # 用例运行的结果存放目录
-
-    # 执行多个步骤
-    def run_steps(self, steps):
-        # 逐个步骤调用多个动作
-        for step in steps:
-            for action, param in step.items():
-                self.run_action(action, param)
-
-    '''
-    执行单个动作：就是调用动作名对应的函数
-    :param action 动作名
-    :param param 参数
-    '''
-
-    def run_action(self, action, param):
-        if 'for(' in action:
-            n = self.parse_for_n(action)
-            self.do_for(param, n)
-            return
-
-        if action not in self.actions:
-            raise Exception(f'Invalid action: [{action}]')
-
-        # 调用动作对应的函数
-        log.debug(f"handle action: {action}={param}")
-        func = self.actions[action]
-        func(param)
 
     # --------- 动作处理的函数 --------
     # 初始化driver
@@ -380,70 +290,6 @@ class Boot(object):
     def mini(self):
         return self.driver.mini
 
-    # 解析动作名中的for(n)中的n
-    def parse_for_n(self, action):
-        n = action[4:-1]
-        # 1 数字
-        if n.isdigit():
-            return int(n)
-
-        # 2 变量名, 必须是list类型
-        n = get_var(n, False)
-        if n == None or not (isinstance(n, list) or isinstance(n, int)):
-            raise Exception(f'Variable in for({n}) parentheses must be int or list type')
-        return n
-
-    # for循环
-    # :param steps 每个迭代中要执行的步骤
-    # :param n 循环次数/循环的列表
-    def do_for(self, steps, n = None):
-        label = f"for({n})"
-        # 循环次数
-        if n == None:
-            n = sys.maxsize # 最大int，等于无限循环次数
-            label = f"for(∞)"
-        # 循环的列表值
-        items = None
-        if isinstance(n, list):
-            items = n
-            n = len(items)
-        log.debug(f"-- For loop start: {label} -- ")
-        last_i = get_var('for_i', False) # 旧的索引
-        last_v = get_var('for_v', False) # 旧的元素
-        try:
-            for i in range(n):
-                # i+1表示迭代次数比较容易理解
-                log.debug(f"{i+1}th iteration")
-                set_var('for_i', i+1) # 更新索引
-                if items == None:
-                    v = None
-                else:
-                    v = items[i]
-                set_var('for_v', v) # 更新元素
-                self.run_steps(steps)
-        except BreakException as e:  # 跳出循环
-            log.debug(f"-- For loop break: {label}, break condition: {e.condition} -- ")
-        else:
-            log.debug(f"-- For loop finish: {label} -- ")
-        finally:
-            set_var('for_i', last_i) # 恢复索引
-            set_var('for_v', last_v) # 恢复元素
-
-    # 执行一次子步骤，相当于 for(1)
-    def once(self, steps):
-        self.do_for(steps, 1)
-
-    # 检查并继续for循环
-    def moveon_if(self, expr):
-        # break_if(条件取反)
-        self.break_if(f"not ({expr})")
-
-    # 跳出for循环
-    def break_if(self, expr):
-        val = eval(expr, globals(), bvars)  # 丢失本地与全局变量, 如引用不了json模块
-        if bool(val):
-            raise BreakException(expr)
-
     # 检查并继续for循环
     def moveon_if_exist_by(self, config):
         self.break_if_not_exist_by(config)
@@ -457,30 +303,6 @@ class Boot(object):
     def break_if_exist_by(self, config):
         if self.exist_by_any(config):
             raise BreakException(config)
-
-    # 加载并执行其他步骤文件
-    def include(self, step_file):
-        self.run_1file(step_file, True)
-
-    # 设置变量
-    def set_vars(self, vars):
-        for k, v in vars.items():
-            v = replace_var(v)  # 替换变量
-            set_var(k, v)
-
-    # 打印变量
-    def print_vars(self, _):
-        log.info(f"Variables: {bvars}")
-
-    # 睡眠
-    def sleep(self, seconds):
-        seconds = replace_var(seconds)  # 替换变量
-        time.sleep(int(seconds))
-
-    # 打印
-    def print(self, msg):
-        msg = replace_var(msg)  # 替换变量
-        log.info(msg)
 
     # 解析响应
     def _analyze_response(self, res, config):
@@ -1247,11 +1069,6 @@ class Boot(object):
 
         # 缩小: 从两边到中间
         return 9.9, 0.1, 0.5, 0.5
-
-    # 执行命令
-    def exec(self, cmd):
-        output = os.popen(cmd).read()
-        log.debug(f"execute commmand: {cmd} | result: {output}")
 
 
 # cli入口
