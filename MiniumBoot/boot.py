@@ -8,7 +8,7 @@ import json
 import fnmatch
 from pathlib import Path
 import requests
-from pyutilb import log, YamlBoot, ocr_youdao
+from pyutilb import log, YamlBoot, BreakException, ocr_youdao
 from pyutilb.util import *
 import base64
 from MiniumBoot.validator import Validator
@@ -29,11 +29,6 @@ def get_value_or_text(self):
         return r
     return self.inner_text
 minium.BaseElement.get_value_or_text = get_value_or_text
-
-# 跳出循环的异常
-class BreakException(Exception):
-    def __init__(self, condition):
-        self.condition = condition  # 跳转条件
 
 # Minium基于yaml的启动器
 class Boot(YamlBoot):
