@@ -1,2 +1,2 @@
 lxml == 4.9.1
-pyutilb >= 1.0.4
+pyutilb >= 1.0.5
