@@ -8,7 +8,8 @@ import json
 import fnmatch
 from pathlib import Path
 import requests
-from pyutilb import log, YamlBoot, BreakException, ocr_youdao
+from pyutilb import YamlBoot, BreakException, ocr_youdao
+from pyutilb.log import log
 from pyutilb.util import *
 import base64
 from MiniumBoot.validator import Validator
