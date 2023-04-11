@@ -8,5 +8,6 @@ build/
 MiniumBoot.egg-info/
 dist/
 boot.log*
+stat.yml
 minium/
 outputs/
