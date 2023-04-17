@@ -5,7 +5,7 @@ import re
 from MiniumBoot.response_wrapper import ResponseWrap
 from MiniumBoot.driver import MiniTestDriver
 from requests import Response
-from pyutilb import log
+from pyutilb.log import log
 
 # 校验器
 class Validator(ResponseWrap):

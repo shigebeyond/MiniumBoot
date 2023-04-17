@@ -5,9 +5,10 @@ from requests import Response
 from MiniumBoot.driver import MiniTestDriver
 from MiniumBoot.response_wrapper import ResponseWrap
 from pyutilb.util import *
+from pyutilb.file import *
 import json # eval 可能会用到
 import re
-from pyutilb import log
+from pyutilb.log import log
 
 # 抽取器
 class Extractor(ResponseWrap):
