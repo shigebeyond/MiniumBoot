@@ -145,7 +145,7 @@ class Boot(YamlBoot):
         is_first = self.step_file == None and self.driver == None
         # 加载步骤文件：会更新 self.step_dir 与 self.step_file
         steps = self.load_1file(step_file, include)
-        log.debug(f"Load and run step file: {self.step_file}")
+        log.debug(f"Load and run step file: %s", self.step_file)
         # 执行步骤
         if is_first:  # 首次执行: 初始化driver + 再运行单元测试
             self.init_and_run_test(steps)
@@ -339,7 +339,7 @@ class Boot(YamlBoot):
             try:
                 ele = self.find_by(type, name)
             except Exception as ex:  # 找不到元素
-                log.error(f"Input element not found{name}", exc_info=ex)
+                log.error(f"Input element not found: %s", name, exc_info=ex)
                 continue
 
             # 输入
@@ -709,17 +709,17 @@ class Boot(YamlBoot):
     # 打印系统信息
     def print_system_info(self, _ = None):
         info = self.mini.get_system_info()
-        log.debug('system_info: ' + json.dumps(info))
+        log.info('system_info: %s', info)
 
     # 打印所有页面
     def print_all_pages(self, _ = None):
-        log.debug('all pages: ' + ', '.join(self.app.get_all_pages_path()))
+        log.info('all pages: %s', self.app.get_all_pages_path())
 
     # 打印当前页面
     def print_current_page(self, _ = None):
         # page = self.app.get_current_page()
         page = self.page
-        log.debug('current_page: ' + str(page) + ', data: ' + json.dumps(page.data))
+        log.info('current_page: %s, data: %s', page, page.data)
 
     ##################################### http请求 ###########################################
     # 设置基础url
@@ -832,7 +832,7 @@ class Boot(YamlBoot):
         # 设置变量
         set_var('download_file', save_file)
         self.downloaded_files[url] = save_file
-        log.debug(f"Dowload file: url is {url}, save path is{save_file}")
+        log.debug(f"Dowload file: url is %s, save path is %s", url, save_file)
         return save_file
 
     # 播放视频/音频
@@ -1091,8 +1091,8 @@ def main():
             src = boot.driver.page_source
             # report_to_sauce(boot.driver.session_id)
             # take_screenshot_and_logcat(boot.driver, device_logger, calling_request)
-        # log.error(f"Exception occurs: current step file is {step_file}, 当前page为 {page}, current page source is {src}", exc_info = ex)
-        log.error(f"Exception occurs: current step file is {boot.step_file}, 当前page为 {page}", exc_info=ex)
+        # log.error(f"Exception occurs: current step file is %s, 当前page为 %s, current page source is %s", step_file, page, src, exc_info = ex)
+        log.error(f"Exception occurs: current step file is %s, 当前page为 %s", boot.step_file, page, exc_info=ex)
         raise ex
     finally:
         # 关闭小程序
