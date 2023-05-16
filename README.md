@@ -595,6 +595,11 @@ validate_by_id:
   "cat_demo_text": # 元素的id
     '=': 'Hello world' # 校验符号或函数: 校验的值
 ```
+可简写为:
+```yaml
+validate_by_id:
+  - "cat_demo_text = Hello world"
+```
 
 2. validate_by_css: 
 从html响应中校验类名对应的元素的值
@@ -604,6 +609,12 @@ validate_by_css:
     '>': 0 # 校验符号或函数: 校验的值, 即 id 元素的值>0
   '#goods_title':
     contains: 衬衫 # 即 title 元素的值包含'衬衫'
+```
+可简写为:
+```yaml
+validate_by_css:
+  - '#id > 0'
+  - '#goods_title contains 衬衫'
 ```
 
 3. validate_by_xpath: 
@@ -615,6 +626,12 @@ validate_by_xpath:
   "//view[@id='goods_title']":
     contains: 衬衫 # 即 title 元素的值包含'衬衫'
 ```
+可简写为:
+```yaml
+validate_by_xpath:
+  - "//view[@id='goods_id'] > 0"
+  - "//view[@id='goods_title'] contains 衬衫"
+```
 
 4. validate_by_jsonpath: 
 从json响应中校验 多层属性 的值
@@ -624,6 +641,12 @@ validate_by_jsonpath:
      '>': 0 # 校验符号或函数: 校验的值, 即 id 元素的值>0
   '$.data.goods_title':
     contains: 衬衫 # 即 title 元素的值包含'衬衫'
+```
+可简写为:
+```yaml
+validate_by_jsonpath:
+  - '$.data.goods_id > 0'
+  - '$.data.goods_title contains 衬衫'
 ```
 
 #### 校验符号或函数
