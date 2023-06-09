@@ -29,6 +29,7 @@ Minium是微信小程序的自动化测试工具，但是要写python代码；
 [SeleniumBoot](https://github.com/shigebeyond/SeleniumBoot)
 [AppiumBoot](https://github.com/shigebeyond/AppiumBoot)
 [ExcelBoot](https://github.com/shigebeyond/ExcelBoot)
+[MonitorBoot](https://github.com/shigebeyond/MonitorBoot)
 
 ## todo
 1. 支持更多的动作
